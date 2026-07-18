@@ -1,0 +1,6 @@
+{
+  "name": "GST Billing & Enterprise Ledger",
+  "description": "Professional GST invoice billing, Excel inventory import, supplier payment histories, staff attendance logs, and daily/monthly summaries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
