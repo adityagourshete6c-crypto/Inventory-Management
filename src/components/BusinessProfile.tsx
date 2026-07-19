@@ -330,6 +330,158 @@ export default function BusinessProfile({
               />
             </div>
 
+            {/* 223-Dashboard Customizable Theme Settings Section */}
+            <div className="pt-6 border-t-2 border-[#1A1A1A] space-y-4">
+              <h3 className="text-xs font-black uppercase tracking-widest text-[#1A1A1A] flex items-center gap-2">
+                <span className="bg-[#1A1A1A] text-white text-[10px] px-2.5 py-0.5 font-bold uppercase tracking-wider">Theme Controls</span>
+                223-Dashboard Premium Themes & Fully Editable Color Combos
+              </h3>
+              <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">
+                Tailor the visual branding, terminal prefix identifiers, and active color palettes for your individual workspace.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">
+                    Dashboard Header Prefix *
+                  </label>
+                  <input
+                    type="text"
+                    name="dashboardPrefix"
+                    value={details.dashboardPrefix || '223-Dashboard'}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-bold focus:ring-1 focus:ring-black focus:outline-none"
+                    placeholder="e.g. 223-Dashboard"
+                  />
+                  <p className="text-[9px] text-slate-400 mt-1.5 uppercase font-bold tracking-wider">
+                    Changes the workspace menu branding header prefix.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">
+                    Interface Theme Mode
+                  </label>
+                  <select
+                    name="themeMode"
+                    value={details.themeMode || 'light'}
+                    onChange={(e) => {
+                      setDetails(prev => ({
+                        ...prev,
+                        themeMode: e.target.value as any
+                      }));
+                    }}
+                    className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-bold focus:ring-1 focus:ring-black focus:outline-none"
+                  >
+                    <option value="light">Swiss Light (High Contrast)</option>
+                    <option value="dark">Cosmic Dark (Command Deck)</option>
+                    <option value="retro">Industrial Retro (Amber CRT)</option>
+                    <option value="minimal">Minimal Soft (Paperback)</option>
+                    <option value="forest">Teal Forest (Organic Warm)</option>
+                    <option value="corporate">Corporate Blue (Steel Vibe)</option>
+                    <option value="neon">Neon Synth (Vaporwave Purple)</option>
+                  </select>
+                  <p className="text-[9px] text-slate-400 mt-1.5 uppercase font-bold tracking-wider">
+                    Select your preferred workspace aesthetic.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">
+                    Accent Brand Color
+                  </label>
+                  <div className="grid grid-cols-6 gap-1 pt-1">
+                    {[
+                      { name: 'black', bg: 'bg-[#1A1A1A]', border: 'border-black' },
+                      { name: 'blue', bg: 'bg-blue-600', border: 'border-blue-800' },
+                      { name: 'emerald', bg: 'bg-[#10B981]', border: 'border-[#047857]' },
+                      { name: 'violet', bg: 'bg-violet-600', border: 'border-violet-800' },
+                      { name: 'amber', bg: 'bg-amber-500', border: 'border-amber-600' },
+                      { name: 'rose', bg: 'bg-rose-600', border: 'border-rose-800' },
+                    ].map((color) => {
+                      const isSelected = (details.themeColor || 'black') === color.name;
+                      return (
+                        <button
+                          key={color.name}
+                          type="button"
+                          onClick={() => {
+                            setDetails(prev => ({
+                              ...prev,
+                              themeColor: color.name
+                            }));
+                          }}
+                          className={`h-8 w-full ${color.bg} border-2 relative cursor-pointer hover:scale-105 transition-transform ${
+                            isSelected ? 'ring-2 ring-offset-2 ring-black border-white' : 'border-transparent opacity-80'
+                          }`}
+                          title={`Select ${color.name} brand color`}
+                        >
+                          {isSelected && (
+                            <span className="absolute inset-0 flex items-center justify-center text-white">
+                              <Check size={14} className="stroke-[3]" />
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Fully Editable Color Customizer */}
+                  <div className="mt-3 pt-2.5 border-t border-slate-200">
+                    <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1">
+                      <input
+                        type="radio"
+                        name="themeColorType"
+                        checked={details.themeColor === 'custom'}
+                        onChange={() => {
+                          setDetails(prev => ({
+                            ...prev,
+                            themeColor: 'custom',
+                            customHexColor: prev.customHexColor || '#FF5733'
+                          }));
+                        }}
+                        className="cursor-pointer"
+                      />
+                      Or Use Custom Hex Color Code:
+                    </label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <input
+                        type="color"
+                        value={details.customHexColor || '#FF5733'}
+                        onChange={(e) => {
+                          setDetails(prev => ({
+                            ...prev,
+                            themeColor: 'custom',
+                            customHexColor: e.target.value
+                          }));
+                        }}
+                        className="h-9 w-9 bg-transparent border-0 cursor-pointer p-0"
+                        title="Choose custom branding color"
+                      />
+                      <input
+                        type="text"
+                        value={details.customHexColor || '#FF5733'}
+                        onChange={(e) => {
+                          setDetails(prev => ({
+                            ...prev,
+                            themeColor: 'custom',
+                            customHexColor: e.target.value
+                          }));
+                        }}
+                        placeholder="#FF5733"
+                        maxLength={7}
+                        className="flex-1 bg-white border border-[#1A1A1A] p-1.5 text-xs font-mono font-bold uppercase text-center focus:ring-1 focus:ring-black focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <p className="text-[9px] text-slate-400 mt-1.5 uppercase font-bold tracking-wider">
+                    Branding: <strong className="text-black uppercase">{(details.themeColor === 'custom' ? details.customHexColor : details.themeColor) || 'black'}</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between pt-4 border-t border-slate-200 gap-4">
               <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest flex items-center gap-1.5">
                 <ShieldCheck size={14} className="text-black" />
@@ -360,10 +512,42 @@ export default function BusinessProfile({
               Memory & Storage Saving Center
             </h3>
             
+            {/* 256 GB Dedicated Cloud Partition Status Box */}
+            <div className="p-4 bg-black text-[#F9F9F7] border border-black space-y-2.5">
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] font-black tracking-widest text-[#F9F9F7]/70 uppercase">CLOUD PARTITION STATUS</span>
+                <span className="bg-emerald-500 text-white text-[8px] px-2 py-0.5 font-bold font-mono uppercase tracking-wider animate-pulse rounded-none">
+                  ONLINE (256 GB)
+                </span>
+              </div>
+              
+              <div className="space-y-1 font-mono">
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-slate-400">Total Allocation:</span>
+                  <span className="font-bold text-white">256.00 GB</span>
+                </div>
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-slate-400">Used Workspace:</span>
+                  <span className="font-bold text-emerald-400">{(0.000012 + (parseFloat(dataSizeInKB) / 1024 / 1024)).toFixed(6)} GB</span>
+                </div>
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-slate-400">Remaining Free:</span>
+                  <span className="font-bold text-white">255.999988 GB</span>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-800 flex items-center gap-2">
+                <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                <p className="text-[8px] text-slate-400 uppercase font-bold tracking-wider leading-relaxed">
+                  Terminal partition isolated, encrypted, and backed up with real-time sync nodes.
+                </p>
+              </div>
+            </div>
+
             {/* Real-time Storage stats */}
-            <div className="space-y-3">
+            <div className="space-y-3 pt-2">
               <div className="flex justify-between items-end text-xs font-bold uppercase tracking-wider">
-                <span>Active Database Footprint</span>
+                <span>Active Browser Local Cache</span>
                 <span className="font-mono">{dataSizeInKB} KB</span>
               </div>
               

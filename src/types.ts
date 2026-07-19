@@ -95,6 +95,10 @@ export interface BusinessDetails {
   bankIfsc: string;
   termsAndConditions: string;
   stateCode: string; // GST state code
+  dashboardPrefix?: string; // customizable prefix, default "223-Dashboard"
+  themeColor?: string; // hex or color class (e.g. "black", "blue", "emerald", "violet", "amber", "rose", "custom")
+  themeMode?: 'light' | 'dark' | 'retro' | 'minimal' | 'forest' | 'corporate' | 'neon';
+  customHexColor?: string; // custom hex color code e.g. "#123456"
 }
 
 export interface AppData {
@@ -105,3 +109,21 @@ export interface AppData {
   invoices: Invoice[];
   businessDetails: BusinessDetails;
 }
+
+export interface UserAccount {
+  id: string;
+  mobileNumber: string;
+  uniqueCode: string;
+  passwordHash: string; // Plain password for simple client verification
+  createdAt: string;
+  businessName: string;
+  storageLimitGB: number; // e.g. 256 GB
+  storageUsedBytes: number;
+}
+
+export interface UserSession {
+  mobileNumber: string;
+  uniqueCode: string;
+  loggedInAt: string;
+}
+

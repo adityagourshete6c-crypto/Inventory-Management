@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { InventoryItem } from '../types';
-import { Search, Plus, Edit2, Trash2, FileSpreadsheet, Download, RefreshCw, Layers } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, FileSpreadsheet, Download, RefreshCw, Layers, Printer } from 'lucide-react';
 import ExcelImporter from './ExcelImporter';
 
 interface InventoryManagerProps {
@@ -19,6 +19,7 @@ export default function InventoryManager({ inventory, onUpdateInventory }: Inven
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
+  const [isPrintView, setIsPrintView] = useState(false);
 
   // Form State
   const [name, setName] = useState('');
@@ -158,6 +159,129 @@ export default function InventoryManager({ inventory, onUpdateInventory }: Inven
     URL.revokeObjectURL(url);
   };
 
+  if (isPrintView) {
+    const totalQty = filteredItems.reduce((sum, item) => sum + item.quantity, 0);
+    const totalWholesaleValue = filteredItems.reduce((sum, item) => sum + (item.quantity * item.rate), 0);
+    const totalMrpValue = filteredItems.reduce((sum, item) => sum + (item.quantity * item.sellingPrice), 0);
+
+    return (
+      <div className="space-y-6 max-w-4xl mx-auto">
+        {/* Navigation control bar - Hidden during print */}
+        <div className="flex justify-between items-center bg-[#F9F9F7] p-5 border-2 border-[#1A1A1A] rounded-none no-print">
+          <button
+            onClick={() => setIsPrintView(false)}
+            className="px-4 py-2.5 bg-white border-2 border-[#1A1A1A] text-black text-xs font-bold uppercase tracking-wider hover:bg-slate-100 transition-colors rounded-none cursor-pointer"
+          >
+            ← Back to Inventory List
+          </button>
+          
+          <button
+            onClick={() => window.print()}
+            className="px-5 py-2.5 bg-black hover:bg-white hover:text-black border-2 border-black text-white text-xs font-black uppercase tracking-wider transition-colors flex items-center gap-1.5 rounded-none cursor-pointer"
+          >
+            <Printer size={14} /> Print Item List (A4)
+          </button>
+        </div>
+
+        {/* PRINT CANVAS */}
+        <div className="bg-white border-2 border-black p-8 text-black font-sans print:border-none print:p-0 rounded-none print-canvas" id="item-list-print">
+          {/* Header */}
+          <div className="flex justify-between items-start border-b-2 border-black pb-5">
+            <div className="space-y-1">
+              <span className="text-[9px] font-black text-white bg-black uppercase tracking-widest px-2 py-1 rounded-none inline-block">Official Stock Report</span>
+              <h1 className="text-2xl font-black text-[#1A1A1A] leading-tight font-display tracking-tight uppercase mt-2">METRO WHOLESALE & SUPPLY</h1>
+              <p className="text-xs text-slate-500 italic font-bold uppercase tracking-wider">A4 FORMATTED STOCK VALUATION & CURRENT INVENTORY LIST</p>
+              <p className="text-[10px] text-slate-600 font-medium">Generated on: {new Date().toLocaleDateString('en-IN')} | Filter: Category [{selectedCategory}]</p>
+            </div>
+            <div className="text-right space-y-1 text-xs">
+              <p className="text-slate-500"><strong>Report ID:</strong> <span className="font-mono font-bold text-black uppercase">SR-{Date.now().toString().slice(-6)}</span></p>
+              <p className="text-slate-500"><strong>Status:</strong> <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 px-1.5 py-0.5 font-bold text-[9px] uppercase">Verified Stock</span></p>
+            </div>
+          </div>
+
+          {/* Quick Stats Grid */}
+          <div className="grid grid-cols-4 gap-4 py-5 border-b-2 border-black">
+            <div className="p-3 bg-[#F9F9F7] border border-black">
+              <p className="text-slate-500 font-sans uppercase font-black text-[8px] tracking-widest">Total Unique Products</p>
+              <p className="font-black text-black text-lg font-mono">{filteredItems.length}</p>
+            </div>
+            <div className="p-3 bg-[#F9F9F7] border border-black">
+              <p className="text-slate-500 font-sans uppercase font-black text-[8px] tracking-widest">Aggregate Quantity</p>
+              <p className="font-black text-black text-lg font-mono">{totalQty} units</p>
+            </div>
+            <div className="p-3 bg-[#F9F9F7] border border-black">
+              <p className="text-slate-500 font-sans uppercase font-black text-[8px] tracking-widest">Valuation (Wholesale Rate)</p>
+              <p className="font-black text-emerald-700 text-lg font-mono">₹{totalWholesaleValue.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</p>
+            </div>
+            <div className="p-3 bg-[#F9F9F7] border border-black">
+              <p className="text-slate-500 font-sans uppercase font-black text-[8px] tracking-widest">Valuation (MRP Total)</p>
+              <p className="font-black text-black text-lg font-mono">₹{totalMrpValue.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</p>
+            </div>
+          </div>
+
+          {/* Items Table */}
+          <div className="py-4">
+            <table className="w-full text-left text-[11px] border-collapse">
+              <thead>
+                <tr className="border-b-2 border-black bg-[#F9F9F7] text-[9px] text-[#1A1A1A] uppercase font-black tracking-wider">
+                  <th className="py-3 pl-2">#</th>
+                  <th className="py-3 font-bold">Product Name & Category</th>
+                  <th className="py-3 text-center">HSN Code</th>
+                  <th className="py-3 text-center">GST %</th>
+                  <th className="py-3 text-right">Wholesale Rate (₹)</th>
+                  <th className="py-3 text-right">Selling Price (MRP) (₹)</th>
+                  <th className="py-3 text-center">Stock Qty</th>
+                  <th className="py-3 pr-2 text-right">Stock Value (Wholesale)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-black font-semibold text-black">
+                {filteredItems.map((item, idx) => {
+                  const itemValue = item.quantity * item.rate;
+                  return (
+                    <tr key={item.id} className="hover:bg-slate-50/20">
+                      <td className="py-3 pl-2 text-slate-400 font-mono">{idx + 1}</td>
+                      <td className="py-3">
+                        <p className="font-bold text-black">{item.name}</p>
+                        <p className="text-[9px] text-slate-400 uppercase tracking-widest font-bold font-mono">{item.category || 'General'}</p>
+                      </td>
+                      <td className="py-3 text-center font-mono text-slate-500">{item.hsnCode || 'N/A'}</td>
+                      <td className="py-3 text-center font-mono">{item.gstPercentage}%</td>
+                      <td className="py-3 text-right font-mono">₹{item.rate.toFixed(2)}</td>
+                      <td className="py-3 text-right font-mono">₹{item.sellingPrice.toFixed(2)}</td>
+                      <td className="py-3 text-center font-mono font-bold">
+                        {item.quantity <= 0 ? (
+                          <span className="text-red-600 font-black">OUT OF STOCK</span>
+                        ) : (
+                          <span>{item.quantity} units</span>
+                        )}
+                      </td>
+                      <td className="py-3 pr-2 text-right font-black font-mono text-black">₹{itemValue.toFixed(2)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Footer Receiver block */}
+          <div className="grid grid-cols-2 gap-4 pt-12 mt-12 border-t-2 border-black text-[10px] text-slate-400">
+            <div>
+              <p className="font-black text-slate-500 uppercase tracking-widest text-[8px] mb-1">Office Inventory Directives:</p>
+              <p className="italic text-slate-500 leading-normal">This stock ledger sheet was formatted automatically for registered printer outputs. Stock quantities must be verified physically on a weekly cycle.</p>
+            </div>
+            <div className="text-right flex flex-col justify-end items-end h-24">
+              <p className="font-bold text-slate-700">Metro Warehouse Supervisor Signature</p>
+              <div className="flex-1"></div>
+              <div className="border-t border-slate-400 w-48 pt-1 mt-4">
+                <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Warehouse Head</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6" id="inventory-manager-container">
       
@@ -186,6 +310,14 @@ export default function InventoryManager({ inventory, onUpdateInventory }: Inven
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => setIsPrintView(true)}
+            className="px-4 py-3 border-2 border-black hover:bg-slate-100 bg-[#F9F9F7] text-black text-xs font-black uppercase tracking-widest transition-colors flex items-center gap-2 rounded-none cursor-pointer"
+          >
+            <Printer size={14} />
+            Print A4 List
+          </button>
+
           <button
             onClick={handleExportCsv}
             className="px-4 py-3 border-2 border-[#1A1A1A] hover:bg-slate-100 bg-white text-[#1A1A1A] text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2 rounded-none cursor-pointer"

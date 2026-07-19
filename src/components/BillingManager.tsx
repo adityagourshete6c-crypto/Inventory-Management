@@ -50,6 +50,7 @@ export default function BillingManager({
   const [activeView, setActiveView] = useState<'billing' | 'history' | 'print'>('billing');
   const [viewingInvoiceId, setViewingInvoiceId] = useState<string | null>(null);
   const [invoiceSearch, setInvoiceSearch] = useState('');
+  const [printLayout, setPrintLayout] = useState<'tax-invoice' | 'simple-bill'>('tax-invoice');
 
   // Auto-increment Invoice Number
   const getNextInvoiceNo = () => {
@@ -678,14 +679,14 @@ export default function BillingManager({
       {activeView === 'print' && activeInvoice && (
         <div className="space-y-6 max-w-4xl mx-auto">
           
-          <div className="flex justify-between items-center bg-[#F9F9F7] p-5 border-2 border-[#1A1A1A] rounded-none no-print">
+          <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center bg-[#F9F9F7] p-5 border-2 border-[#1A1A1A] rounded-none no-print gap-4">
             <button
               onClick={() => setActiveView('billing')}
               className="px-4 py-2.5 bg-white border-2 border-[#1A1A1A] text-black text-xs font-bold uppercase tracking-wider hover:bg-slate-100 transition-colors rounded-none cursor-pointer"
             >
               ← Back to Bill Maker
             </button>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setActiveView('history')}
                 className="px-4 py-2.5 bg-white border-2 border-[#1A1A1A] text-black text-xs font-bold uppercase tracking-wider hover:bg-slate-100 transition-colors rounded-none cursor-pointer"
@@ -696,18 +697,52 @@ export default function BillingManager({
                 onClick={handlePrint}
                 className="px-5 py-2.5 bg-black hover:bg-white hover:text-black border-2 border-black text-white text-xs font-black uppercase tracking-wider transition-colors flex items-center gap-1.5 rounded-none cursor-pointer"
               >
-                <Printer size={14} /> Print Tax Invoice
+                <Printer size={14} /> Print A4 Document
+              </button>
+            </div>
+          </div>
+
+          {/* Interactive Print Layout Chooser */}
+          <div className="flex flex-col sm:flex-row bg-[#FDFDFB] p-4 border-2 border-dashed border-black no-print items-stretch sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-xs font-black uppercase tracking-wider text-black">A4 Registered Printer Format Selection</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold tracking-tight">Select the target layout to output directly to your office desktop/registered A4 paper printer.</p>
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setPrintLayout('tax-invoice')}
+                className={`px-4 py-2 text-xs font-black uppercase tracking-wider transition-all border-2 ${
+                  printLayout === 'tax-invoice'
+                    ? 'bg-black text-white border-black'
+                    : 'bg-white text-black border-slate-300 hover:border-black'
+                } cursor-pointer rounded-none`}
+              >
+                📝 A4 GST Tax Invoice
+              </button>
+              <button
+                type="button"
+                onClick={() => setPrintLayout('simple-bill')}
+                className={`px-4 py-2 text-xs font-black uppercase tracking-wider transition-all border-2 ${
+                  printLayout === 'simple-bill'
+                    ? 'bg-black text-white border-black'
+                    : 'bg-white text-black border-slate-300 hover:border-black'
+                } cursor-pointer rounded-none`}
+              >
+                🧾 A4 Simple Retail Bill
               </button>
             </div>
           </div>
 
           {/* PRINT CANVAS */}
-          <div className="bg-white border-2 border-black p-8 text-black font-sans print:border-none print:p-0 rounded-none" id="gst-invoice-print">
+          <div className="bg-white border-2 border-black p-8 text-black font-sans print:border-none print:p-0 rounded-none print-canvas" id="gst-invoice-print">
             
             {/* Header / Brand Details */}
             <div className="flex justify-between items-start border-b-2 border-black pb-5">
               <div className="space-y-1">
-                <span className="text-[9px] font-black text-white bg-black uppercase tracking-widest px-2 py-1 rounded-none inline-block">Tax Invoice</span>
+                <span className="text-[9px] font-black text-white bg-black uppercase tracking-widest px-2 py-1 rounded-none inline-block">
+                  {printLayout === 'tax-invoice' ? 'Tax Invoice' : 'Retail Bill Copy'}
+                </span>
                 <h1 className="text-2xl font-black text-[#1A1A1A] leading-tight font-display tracking-tight uppercase mt-2">{businessDetails.name}</h1>
                 <p className="text-xs text-slate-500 italic font-bold uppercase tracking-wider">{businessDetails.tagline}</p>
                 <p className="text-[10px] text-slate-600 font-medium max-w-md mt-1">{businessDetails.address}</p>
@@ -716,9 +751,19 @@ export default function BillingManager({
 
               <div className="text-right space-y-1 font-mono text-[10px]">
                 <div className="p-3 bg-[#F9F9F7] border-2 border-black rounded-none text-left">
-                  <p className="text-slate-500 font-sans uppercase font-bold text-[8px] tracking-widest">GSTIN NUMBER</p>
-                  <p className="font-black text-black text-xs font-mono">{businessDetails.gstin}</p>
-                  <p className="text-[9px] text-slate-500 font-sans mt-0.5 font-bold uppercase tracking-wider">State Code: {businessDetails.stateCode}</p>
+                  {printLayout === 'tax-invoice' ? (
+                    <>
+                      <p className="text-slate-500 font-sans uppercase font-bold text-[8px] tracking-widest">GSTIN NUMBER</p>
+                      <p className="font-black text-black text-xs font-mono">{businessDetails.gstin}</p>
+                      <p className="text-[9px] text-slate-500 font-sans mt-0.5 font-bold uppercase tracking-wider">State Code: {businessDetails.stateCode}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-slate-500 font-sans uppercase font-bold text-[8px] tracking-widest">TRANSACTION REFERENCE</p>
+                      <p className="font-black text-black text-xs font-mono">B2C RETAIL BILL</p>
+                      <p className="text-[9px] text-slate-500 font-sans mt-0.5 font-bold uppercase tracking-wider">Date: {activeInvoice.date}</p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -730,7 +775,7 @@ export default function BillingManager({
                 <p className="font-bold text-[#1A1A1A] text-xs">{activeInvoice.customerName}</p>
                 {activeInvoice.customerAddress && <p className="text-[10px] text-slate-500 leading-relaxed font-serif italic">{activeInvoice.customerAddress}</p>}
                 {activeInvoice.customerPhone && <p className="text-[10px] text-slate-500">Phone: {activeInvoice.customerPhone}</p>}
-                {activeInvoice.customerGstin ? (
+                {printLayout === 'tax-invoice' && activeInvoice.customerGstin ? (
                   <p className="text-[10px] font-bold text-black bg-slate-50 border border-black px-2.5 py-0.5 rounded-none inline-block font-mono mt-1">
                     GSTIN: {activeInvoice.customerGstin}
                   </p>
@@ -741,9 +786,9 @@ export default function BillingManager({
 
               <div className="text-right space-y-1 text-xs">
                 <div className="inline-block text-left space-y-1 border-l border-black pl-4">
-                  <p className="text-slate-500"><strong>Invoice No:</strong> <strong className="text-black font-mono text-sm">{activeInvoice.invoiceNo}</strong></p>
-                  <p className="text-slate-500"><strong>Invoice Date:</strong> <strong className="text-slate-800">{activeInvoice.date}</strong></p>
-                  <p className="text-slate-500"><strong>Place of Supply:</strong> {activeInvoice.isInterstate ? 'Interstate' : 'Intrastate (Local)'}</p>
+                  <p className="text-slate-500"><strong>Bill No:</strong> <strong className="text-black font-mono text-sm">{activeInvoice.invoiceNo}</strong></p>
+                  <p className="text-slate-500"><strong>Date of Issue:</strong> <strong className="text-slate-800">{activeInvoice.date}</strong></p>
+                  <p className="text-slate-500"><strong>Bill Category:</strong> {printLayout === 'tax-invoice' ? 'GST Tax Invoice' : 'Non-GST Retail Bill'}</p>
                   <p className="text-slate-500"><strong>Payment Mode:</strong> <span className="bg-slate-100 border border-black px-1.5 py-0.5 font-bold text-[9px] text-[#1A1A1A]">{activeInvoice.paymentMode}</span></p>
                 </div>
               </div>
@@ -753,56 +798,83 @@ export default function BillingManager({
             <div className="py-4">
               <table className="w-full text-left text-[11px] border-collapse">
                 <thead>
-                  <tr className="border-b-2 border-black bg-[#F9F9F7] text-[9px] text-[#1A1A1A] uppercase font-black tracking-wider">
-                    <th className="py-3 pl-2">#</th>
-                    <th className="py-3">Item Description</th>
-                    <th className="py-3 text-center">HSN</th>
-                    <th className="py-3 text-right">Qty</th>
-                    <th className="py-3 text-right">Rate (₹)</th>
-                    <th className="py-3 text-right">Taxable Amt</th>
-                    {activeInvoice.isInterstate ? (
-                      <>
-                        <th className="py-3 text-right">IGST %</th>
-                        <th className="py-3 text-right">IGST Amt</th>
-                      </>
-                    ) : (
-                      <>
-                        <th className="py-3 text-right">CGST %</th>
-                        <th className="py-3 text-right">CGST Amt</th>
-                        <th className="py-3 text-right">SGST %</th>
-                        <th className="py-3 text-right">SGST Amt</th>
-                      </>
-                    )}
-                    <th className="py-3 pr-2 text-right">Net Total (₹)</th>
-                  </tr>
+                  {printLayout === 'tax-invoice' ? (
+                    <tr className="border-b-2 border-black bg-[#F9F9F7] text-[9px] text-[#1A1A1A] uppercase font-black tracking-wider">
+                      <th className="py-3 pl-2">#</th>
+                      <th className="py-3">Item Description</th>
+                      <th className="py-3 text-center">HSN</th>
+                      <th className="py-3 text-right">Qty</th>
+                      <th className="py-3 text-right">Rate (₹)</th>
+                      <th className="py-3 text-right">Taxable Amt</th>
+                      {activeInvoice.isInterstate ? (
+                        <>
+                          <th className="py-3 text-right">IGST %</th>
+                          <th className="py-3 text-right">IGST Amt</th>
+                        </>
+                      ) : (
+                        <>
+                          <th className="py-3 text-right">CGST %</th>
+                          <th className="py-3 text-right">CGST Amt</th>
+                          <th className="py-3 text-right">SGST %</th>
+                          <th className="py-3 text-right">SGST Amt</th>
+                        </>
+                      )}
+                      <th className="py-3 pr-2 text-right">Net Total (₹)</th>
+                    </tr>
+                  ) : (
+                    <tr className="border-b-2 border-black bg-[#F9F9F7] text-[9px] text-[#1A1A1A] uppercase font-black tracking-wider">
+                      <th className="py-3 pl-2">#</th>
+                      <th className="py-3">Item Description & Specification</th>
+                      <th className="py-3 text-center">HSN Code</th>
+                      <th className="py-3 text-right">Billed Qty</th>
+                      <th className="py-3 text-right">Rate / Unit (₹)</th>
+                      <th className="py-3 pr-2 text-right">Total Net Amount (₹)</th>
+                    </tr>
+                  )}
                 </thead>
                 <tbody className="divide-y divide-black font-semibold text-black">
                   {activeInvoice.items.map((item, idx) => {
                     const basePrice = item.taxableAmount / item.quantity;
-                    return (
-                      <tr key={idx} className="hover:bg-slate-50/20">
-                        <td className="py-3 pl-2 text-slate-400 font-mono">{idx + 1}</td>
-                        <td className="py-3 font-bold text-black">{item.name}</td>
-                        <td className="py-3 text-center font-mono text-[10px] text-slate-500">{item.hsnCode}</td>
-                        <td className="py-3 text-right font-mono">{item.quantity}</td>
-                        <td className="py-3 text-right font-mono">₹{basePrice.toFixed(2)}</td>
-                        <td className="py-3 text-right font-mono">₹{item.taxableAmount.toFixed(2)}</td>
-                        {activeInvoice.isInterstate ? (
-                          <>
-                            <td className="py-3 text-right font-mono">{item.gstPercentage}%</td>
-                            <td className="py-3 text-right font-mono">₹{item.gstAmount.toFixed(2)}</td>
-                          </>
-                        ) : (
-                          <>
-                            <td className="py-3 text-right font-mono">{item.gstPercentage / 2}%</td>
-                            <td className="py-3 text-right font-mono">₹{(item.gstAmount / 2).toFixed(2)}</td>
-                            <td className="py-3 text-right font-mono">{item.gstPercentage / 2}%</td>
-                            <td className="py-3 text-right font-mono">₹{(item.gstAmount / 2).toFixed(2)}</td>
-                          </>
-                        )}
-                        <td className="py-3 pr-2 text-right font-black font-mono text-black">₹{item.totalAmount.toFixed(2)}</td>
-                      </tr>
-                    );
+                    const itemTotalWithGst = item.totalAmount;
+                    
+                    if (printLayout === 'tax-invoice') {
+                      return (
+                        <tr key={idx} className="hover:bg-slate-50/20">
+                          <td className="py-3 pl-2 text-slate-400 font-mono">{idx + 1}</td>
+                          <td className="py-3 font-bold text-black">{item.name}</td>
+                          <td className="py-3 text-center font-mono text-[10px] text-slate-500">{item.hsnCode}</td>
+                          <td className="py-3 text-right font-mono">{item.quantity}</td>
+                          <td className="py-3 text-right font-mono">₹{basePrice.toFixed(2)}</td>
+                          <td className="py-3 text-right font-mono">₹{item.taxableAmount.toFixed(2)}</td>
+                          {activeInvoice.isInterstate ? (
+                            <>
+                              <td className="py-3 text-right font-mono">{item.gstPercentage}%</td>
+                              <td className="py-3 text-right font-mono">₹{item.gstAmount.toFixed(2)}</td>
+                            </>
+                          ) : (
+                            <>
+                              <td className="py-3 text-right font-mono">{item.gstPercentage / 2}%</td>
+                              <td className="py-3 text-right font-mono">₹{(item.gstAmount / 2).toFixed(2)}</td>
+                              <td className="py-3 text-right font-mono">{item.gstPercentage / 2}%</td>
+                              <td className="py-3 text-right font-mono">₹{(item.gstAmount / 2).toFixed(2)}</td>
+                            </>
+                          )}
+                          <td className="py-3 pr-2 text-right font-black font-mono text-black">₹{item.totalAmount.toFixed(2)}</td>
+                        </tr>
+                      );
+                    } else {
+                      // Simple Retail Bill row
+                      return (
+                        <tr key={idx} className="hover:bg-slate-50/20">
+                          <td className="py-3 pl-2 text-slate-400 font-mono">{idx + 1}</td>
+                          <td className="py-3 font-black text-black">{item.name}</td>
+                          <td className="py-3 text-center font-mono text-slate-400">{item.hsnCode || 'N/A'}</td>
+                          <td className="py-3 text-right font-mono text-xs font-black">{item.quantity} units</td>
+                          <td className="py-3 text-right font-mono">₹{basePrice.toFixed(2)}</td>
+                          <td className="py-3 pr-2 text-right font-black font-mono text-black">₹{itemTotalWithGst.toFixed(2)}</td>
+                        </tr>
+                      );
+                    }
                   })}
                 </tbody>
               </table>
@@ -839,25 +911,40 @@ export default function BillingManager({
 
               {/* Right Totals summary */}
               <div className="text-right space-y-2 text-xs">
-                <div className="flex justify-between border-b border-slate-200 pb-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                  <span>Total Taxable Value:</span>
-                  <span className="text-black font-black font-mono">₹{activeInvoice.subTotal.toFixed(2)}</span>
-                </div>
+                {printLayout === 'tax-invoice' ? (
+                  <>
+                    <div className="flex justify-between border-b border-slate-200 pb-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                      <span>Total Taxable Value:</span>
+                      <span className="text-black font-black font-mono">₹{activeInvoice.subTotal.toFixed(2)}</span>
+                    </div>
 
-                {activeInvoice.isInterstate ? (
-                  <div className="flex justify-between border-b border-slate-200 pb-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                    <span>Integrated Tax (IGST):</span>
-                    <span className="text-black font-black font-mono">₹{activeInvoice.gstTotal.toFixed(2)}</span>
-                  </div>
+                    {activeInvoice.isInterstate ? (
+                      <div className="flex justify-between border-b border-slate-200 pb-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                        <span>Integrated Tax (IGST):</span>
+                        <span className="text-black font-black font-mono">₹{activeInvoice.gstTotal.toFixed(2)}</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex justify-between text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                          <span>Central Tax (CGST):</span>
+                          <span className="text-black font-black font-mono">₹{activeInvoice.cgst.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-slate-200 pb-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                          <span>State Tax (SGST):</span>
+                          <span className="text-black font-black font-mono">₹{activeInvoice.sgst.toFixed(2)}</span>
+                        </div>
+                      </>
+                    )}
+                  </>
                 ) : (
                   <>
-                    <div className="flex justify-between text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                      <span>Central Tax (CGST):</span>
-                      <span className="text-black font-black font-mono">₹{activeInvoice.cgst.toFixed(2)}</span>
+                    <div className="flex justify-between border-b border-slate-200 pb-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                      <span>Goods/Services Value:</span>
+                      <span className="text-slate-800 font-bold font-mono">₹{activeInvoice.subTotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between border-b border-slate-200 pb-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
-                      <span>State Tax (SGST):</span>
-                      <span className="text-black font-black font-mono">₹{activeInvoice.sgst.toFixed(2)}</span>
+                      <span>Tax (GST Consolidated):</span>
+                      <span className="text-slate-800 font-bold font-mono">₹{activeInvoice.gstTotal.toFixed(2)}</span>
                     </div>
                   </>
                 )}
