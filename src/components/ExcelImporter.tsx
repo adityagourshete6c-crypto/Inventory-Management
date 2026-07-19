@@ -12,10 +12,6 @@ interface ExcelImporterProps {
   onClose: () => void;
 }
 
-interface ParsedRow {
-  [key: string]: string;
-}
-
 export default function ExcelImporter({ onImportComplete, onClose }: ExcelImporterProps) {
   const [pasteText, setPasteText] = useState('');
   const [fileData, setFileData] = useState<string[][]>([]);
@@ -55,7 +51,6 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
   };
 
   const parseRawText = (text: string, delimiter: string) => {
-    // Basic CSV/TSV parser that respects quotes
     const rows: string[][] = [];
     const lines = text.split(/\r?\n/);
     
@@ -65,7 +60,6 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
       
       let row: string[] = [];
       if (delimiter === ',') {
-        // Regex to parse CSV lines with double quotes
         let inQuotes = false;
         let cell = '';
         for (let j = 0; j < line.length; j++) {
@@ -81,7 +75,6 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
         }
         row.push(cell.trim());
       } else {
-        // TSV for excel copy-paste
         row = line.split('\t').map(c => c.trim().replace(/^"|"$/g, ''));
       }
       rows.push(row);
@@ -96,7 +89,6 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
     setHeaders(firstRow);
     setParsedRows(rows.slice(1));
     
-    // Auto map column indices based on header names
     const newMapping = { ...columnMapping };
     firstRow.forEach((hdr, idx) => {
       const h = hdr.toLowerCase();
@@ -148,7 +140,6 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
   };
 
   const handleImportSubmit = () => {
-    // Validate mapping
     if (columnMapping.name === -1) {
       setError('Please map the "Item Name" column. It is required.');
       return;
@@ -166,7 +157,7 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
       const name = getName();
       if (!name) {
         skippedRows++;
-        return; // skip rows without name
+        return;
       }
 
       const getNum = (field: string, fallback: number) => {
@@ -185,10 +176,10 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
       const quantity = getNum('quantity', 0);
       const buyingPrice = getNum('buyingPrice', 0);
       const sellingPrice = getNum('sellingPrice', 0);
-      const rate = getNum('rate', sellingPrice); // default rate to sellingPrice if empty
+      const rate = getNum('rate', sellingPrice);
       const category = getStr('category', 'General');
       const hsnCode = getStr('hsnCode', '0000');
-      const gstPercentage = getNum('gstPercentage', 18); // default to 18%
+      const gstPercentage = getNum('gstPercentage', 18);
 
       finalItems.push({
         id: `imported-${Date.now()}-${rowIndex}-${Math.random().toString(36).substr(2, 4)}`,
@@ -214,32 +205,36 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
+      <div className="bg-white border-2 border-[#1A1A1A] max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden rounded-none shadow-none">
         
         {/* Header */}
-        <div className="px-6 py-4 bg-slate-50 border-b border-slate-150 flex justify-between items-center">
+        <div className="px-6 py-5 bg-[#F9F9F7] border-b-2 border-[#1A1A1A] flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-100 rounded-lg text-emerald-700">
-              <FileSpreadsheet size={24} />
+            <div className="p-2 bg-black text-white rounded-none">
+              <FileSpreadsheet size={22} />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-800">Import Items from Excel / Sheets</h2>
-              <p className="text-xs text-slate-500">Fast bulk upload for inventory, pricing, and tax details</p>
+              <h2 className="text-base font-black italic uppercase tracking-widest text-[#1A1A1A] font-display">
+                Excel & Sheets Direct Importer
+              </h2>
+              <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                Bulk ledger uploads & quantity merges
+              </p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 transition-colors text-sm font-medium px-2 py-1 rounded-md"
+            className="text-black hover:opacity-75 font-black text-sm cursor-pointer"
           >
-            Cancel
+            ✕
           </button>
         </div>
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {error && (
-            <div className="p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded-r-md flex items-start gap-2">
-              <AlertCircle size={18} className="shrink-0 mt-0.5" />
+            <div className="p-4 bg-red-50 border-2 border-red-600 text-red-800 text-xs font-bold uppercase tracking-wide flex items-start gap-2 rounded-none">
+              <AlertCircle size={16} className="shrink-0 mt-0.5" />
               <div>{error}</div>
             </div>
           )}
@@ -248,24 +243,24 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {/* Copy Paste Option */}
-              <div className="border border-slate-200 rounded-xl p-5 hover:border-slate-300 transition-all flex flex-col bg-slate-50/50">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-bold">1</div>
-                  <h3 className="font-semibold text-slate-700 text-sm">Copy & Paste from Excel</h3>
+              <div className="border-2 border-[#1A1A1A] rounded-none p-5 flex flex-col bg-white">
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className="w-7 h-7 bg-black text-white flex items-center justify-center text-xs font-black font-mono">1</div>
+                  <h3 className="font-bold uppercase tracking-wider text-xs text-[#1A1A1A]">Copy & Paste Columns</h3>
                 </div>
-                <p className="text-xs text-slate-500 mb-4">
-                  Open your spreadsheet, highlight the rows and columns, copy them (Ctrl+C), and paste them in the box below.
+                <p className="text-[11px] text-slate-500 mb-4 leading-normal">
+                  Select database cells in Excel, press <kbd className="bg-slate-100 border px-1 py-0.5 text-[10px] font-mono">Ctrl+C</kbd>, then paste them in the zone below:
                 </p>
                 <textarea
                   value={pasteText}
                   onChange={(e) => setPasteText(e.target.value)}
-                  placeholder="Paste cells copied from Excel here...&#10;Example:&#10;Product Name	Qty	Buying Price	Selling Price	Rate	HSN	GST %&#10;Premium Wire	100	800	1100	1050	8544	18"
-                  className="w-full h-44 text-xs font-mono p-3 border border-slate-200 rounded-lg bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none placeholder:text-slate-300"
+                  placeholder="Paste cells here...&#10;Columns separated by tab (Standard Excel Copy).&#10;Include column header labels in the first row!"
+                  className="w-full h-44 text-xs font-mono p-3 border border-black rounded-none bg-white focus:outline-none resize-none placeholder:text-slate-300"
                 />
                 <button
                   onClick={handlePasteProcess}
                   disabled={!pasteText.trim()}
-                  className="mt-4 w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="mt-4 w-full py-3 bg-[#1A1A1A] hover:bg-white hover:text-black border border-black text-white text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 rounded-none cursor-pointer"
                 >
                   <FileText size={14} />
                   Analyze Copied Cells
@@ -273,22 +268,22 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
               </div>
 
               {/* CSV Upload Option */}
-              <div className="border border-dashed border-slate-300 hover:border-slate-400 rounded-xl p-5 transition-all flex flex-col items-center justify-center text-center bg-slate-50/50">
-                <div className="flex items-center gap-2 mb-3 self-start">
-                  <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-bold">2</div>
-                  <h3 className="font-semibold text-slate-700 text-sm">Upload CSV File</h3>
+              <div className="border-2 border-dashed border-[#1A1A1A] rounded-none p-5 flex flex-col items-center justify-center text-center bg-[#F9F9F7]">
+                <div className="flex items-center gap-2.5 mb-3 self-start">
+                  <div className="w-7 h-7 bg-black text-white flex items-center justify-center text-xs font-black font-mono">2</div>
+                  <h3 className="font-bold uppercase tracking-wider text-xs text-[#1A1A1A]">Upload CSV File</h3>
                 </div>
-                <p className="text-xs text-slate-500 mb-6 max-w-xs">
-                  Save your Excel workbook as CSV (Comma Separated Values) format and drag/upload it here.
+                <p className="text-[11px] text-slate-500 mb-6 max-w-xs leading-normal">
+                  Export your workbook as Comma Separated CSV, then drop or choose the file here.
                 </p>
 
                 <div 
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-10 border border-dashed border-slate-200 hover:border-blue-500 hover:bg-blue-50/20 rounded-xl transition-all cursor-pointer flex flex-col items-center justify-center bg-white"
+                  className="w-full py-12 border border-dashed border-[#1A1A1A] bg-white hover:bg-slate-50 transition-all cursor-pointer flex flex-col items-center justify-center rounded-none"
                 >
-                  <Upload size={32} className="text-slate-400 mb-2" />
-                  <span className="text-xs font-medium text-slate-600">Click to browse or drop file here</span>
-                  <span className="text-[10px] text-slate-400 mt-1">Supports standard .csv format</span>
+                  <Upload size={32} className="text-[#1A1A1A] mb-2" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A]">Select CSV Document</span>
+                  <span className="text-[9px] font-mono text-slate-400 mt-1">Supports UTF-8 CSV sheets</span>
                 </div>
 
                 <input
@@ -301,11 +296,11 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
               </div>
 
               {/* Template Info Card */}
-              <div className="md:col-span-2 bg-slate-50 border border-slate-150 p-4 rounded-xl flex items-start gap-3">
-                <Info size={18} className="text-slate-500 mt-0.5 shrink-0" />
-                <div className="text-xs text-slate-600 space-y-1">
-                  <span className="font-semibold text-slate-700">Excel Column Guide:</span>
-                  <p>Your sheet can have headers in any order. Our smart mapper will try to automatically identify matching columns for you. Only the <strong className="text-slate-800">Item Name</strong> is strictly required; other missing values will default automatically.</p>
+              <div className="md:col-span-2 bg-[#F9F9F7] border border-black p-4 rounded-none flex items-start gap-3">
+                <Info size={18} className="text-black mt-0.5 shrink-0" />
+                <div className="text-[11px] text-slate-600 space-y-1">
+                  <span className="font-bold uppercase text-[#1A1A1A] tracking-wider">Excel Format Checklist:</span>
+                  <p>Our intelligent system matches headers automatically (e.g. <em>Quantity, Rate, buying price, GST %, selling price, HSN</em>). Only the <strong>Item Name</strong> field is strictly required; remaining cells default seamlessly.</p>
                 </div>
               </div>
 
@@ -314,13 +309,13 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
             // Mapping Step
             <div className="space-y-6">
               
-              <div className="flex justify-between items-center">
-                <div className="text-xs text-slate-500">
-                  Detected <span className="font-semibold text-slate-700">{headers.length}</span> columns and <span className="font-semibold text-slate-700">{parsedRows.length}</span> items from <span className="font-semibold text-slate-700">{fileName || 'Copied Excel cells'}</span>.
+              <div className="flex justify-between items-center border-b border-black pb-2">
+                <div className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A]">
+                  Detected <span className="font-mono">{headers.length}</span> Columns and <span className="font-mono">{parsedRows.length}</span> Items from <span className="underline font-mono">{fileName || 'Excel paste'}</span>.
                 </div>
                 <button
                   onClick={handleClear}
-                  className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium"
+                  className="text-xs text-black font-black uppercase tracking-widest hover:underline flex items-center gap-1.5 cursor-pointer"
                 >
                   <RefreshCw size={12} />
                   Start Over
@@ -328,25 +323,25 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
               </div>
 
               {/* Column Mapping Form */}
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                  <Check size={16} className="text-emerald-500" />
-                  Map Excel Columns to Database Fields
+              <div className="bg-[#F9F9F7] p-5 border border-black rounded-none">
+                <h3 className="text-xs font-black uppercase tracking-widest text-[#1A1A1A] mb-3 flex items-center gap-2 font-display italic">
+                  <Check size={16} className="text-black" />
+                  Map System Fields to Excel Headers
                 </h3>
-                <p className="text-xs text-slate-500 mb-4">
-                  Match each system field on the left with the correct column header from your Excel sheet on the right.
+                <p className="text-[11px] text-slate-500 mb-4 leading-normal">
+                  Ensure the column headers of your excel table (right) correctly feed into the appropriate software fields (left).
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   {/* Name field */}
                   <div>
-                    <label className="block text-[11px] font-medium text-slate-600 mb-1">
-                      Item Name <span className="text-red-500">*</span>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">
+                      Item Name <span className="text-red-600">*</span>
                     </label>
                     <select
                       value={columnMapping.name}
                       onChange={(e) => handleMappingChange('name', parseInt(e.target.value))}
-                      className="w-full bg-white border border-slate-200 text-xs rounded-lg p-2 focus:ring-1 focus:ring-blue-500 focus:outline-hidden"
+                      className="w-full bg-white border border-black text-xs p-2 focus:ring-1 focus:ring-black focus:outline-none"
                     >
                       <option value={-1}>-- Select Column --</option>
                       {headers.map((hdr, idx) => (
@@ -357,11 +352,11 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
 
                   {/* Quantity */}
                   <div>
-                    <label className="block text-[11px] font-medium text-slate-600 mb-1">Stock / Qty</label>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Stock / Qty</label>
                     <select
                       value={columnMapping.quantity}
                       onChange={(e) => handleMappingChange('quantity', parseInt(e.target.value))}
-                      className="w-full bg-white border border-slate-200 text-xs rounded-lg p-2 focus:ring-1 focus:ring-blue-500 focus:outline-hidden"
+                      className="w-full bg-white border border-black text-xs p-2 focus:ring-1 focus:ring-black focus:outline-none"
                     >
                       <option value={-1}>-- Default (0) --</option>
                       {headers.map((hdr, idx) => (
@@ -372,11 +367,11 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
 
                   {/* Buying Price */}
                   <div>
-                    <label className="block text-[11px] font-medium text-slate-600 mb-1">Buying Price</label>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Buying Price</label>
                     <select
                       value={columnMapping.buyingPrice}
                       onChange={(e) => handleMappingChange('buyingPrice', parseInt(e.target.value))}
-                      className="w-full bg-white border border-slate-200 text-xs rounded-lg p-2 focus:ring-1 focus:ring-blue-500 focus:outline-hidden"
+                      className="w-full bg-white border border-black text-xs p-2 focus:ring-1 focus:ring-black focus:outline-none"
                     >
                       <option value={-1}>-- Default (0) --</option>
                       {headers.map((hdr, idx) => (
@@ -387,11 +382,11 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
 
                   {/* Selling Price */}
                   <div>
-                    <label className="block text-[11px] font-medium text-slate-600 mb-1">Selling Price</label>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Selling Price</label>
                     <select
                       value={columnMapping.sellingPrice}
                       onChange={(e) => handleMappingChange('sellingPrice', parseInt(e.target.value))}
-                      className="w-full bg-white border border-slate-200 text-xs rounded-lg p-2 focus:ring-1 focus:ring-blue-500 focus:outline-hidden"
+                      className="w-full bg-white border border-black text-xs p-2 focus:ring-1 focus:ring-black focus:outline-none"
                     >
                       <option value={-1}>-- Default (0) --</option>
                       {headers.map((hdr, idx) => (
@@ -402,13 +397,13 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
 
                   {/* Rate */}
                   <div>
-                    <label className="block text-[11px] font-medium text-slate-600 mb-1">Rate (Wholesale)</label>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Rate (Wholesale)</label>
                     <select
                       value={columnMapping.rate}
                       onChange={(e) => handleMappingChange('rate', parseInt(e.target.value))}
-                      className="w-full bg-white border border-slate-200 text-xs rounded-lg p-2 focus:ring-1 focus:ring-blue-500 focus:outline-hidden"
+                      className="w-full bg-white border border-black text-xs p-2 focus:ring-1 focus:ring-black focus:outline-none"
                     >
-                      <option value={-1}>-- Same as Selling Price --</option>
+                      <option value={-1}>-- Same as Selling --</option>
                       {headers.map((hdr, idx) => (
                         <option key={idx} value={idx}>{hdr}</option>
                       ))}
@@ -417,11 +412,11 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
 
                   {/* Category */}
                   <div>
-                    <label className="block text-[11px] font-medium text-slate-600 mb-1">Category</label>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Category</label>
                     <select
                       value={columnMapping.category}
                       onChange={(e) => handleMappingChange('category', parseInt(e.target.value))}
-                      className="w-full bg-white border border-slate-200 text-xs rounded-lg p-2 focus:ring-1 focus:ring-blue-500 focus:outline-hidden"
+                      className="w-full bg-white border border-black text-xs p-2 focus:ring-1 focus:ring-black focus:outline-none"
                     >
                       <option value={-1}>-- Default (General) --</option>
                       {headers.map((hdr, idx) => (
@@ -432,11 +427,11 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
 
                   {/* HSN Code */}
                   <div>
-                    <label className="block text-[11px] font-medium text-slate-600 mb-1">HSN Code (GST)</label>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">HSN Code (GST)</label>
                     <select
                       value={columnMapping.hsnCode}
                       onChange={(e) => handleMappingChange('hsnCode', parseInt(e.target.value))}
-                      className="w-full bg-white border border-slate-200 text-xs rounded-lg p-2 focus:ring-1 focus:ring-blue-500 focus:outline-hidden"
+                      className="w-full bg-white border border-black text-xs p-2 focus:ring-1 focus:ring-black focus:outline-none"
                     >
                       <option value={-1}>-- Default (0000) --</option>
                       {headers.map((hdr, idx) => (
@@ -447,11 +442,11 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
 
                   {/* GST % */}
                   <div>
-                    <label className="block text-[11px] font-medium text-slate-600 mb-1">GST Percentage</label>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">GST Percentage</label>
                     <select
                       value={columnMapping.gstPercentage}
                       onChange={(e) => handleMappingChange('gstPercentage', parseInt(e.target.value))}
-                      className="w-full bg-white border border-slate-200 text-xs rounded-lg p-2 focus:ring-1 focus:ring-blue-500 focus:outline-hidden"
+                      className="w-full bg-white border border-black text-xs p-2 focus:ring-1 focus:ring-black focus:outline-none"
                     >
                       <option value={-1}>-- Default (18%) --</option>
                       {headers.map((hdr, idx) => (
@@ -463,24 +458,24 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
               </div>
 
               {/* Data Import Preview */}
-              <div>
-                <h4 className="text-xs font-semibold text-slate-700 mb-2">Data Preview (First 4 rows)</h4>
-                <div className="border border-slate-200 rounded-lg overflow-x-auto">
-                  <table className="w-full text-left text-xs text-slate-600">
-                    <thead className="bg-slate-100 text-slate-700">
+              <div className="space-y-2">
+                <h4 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Data Preview (First 4 rows)</h4>
+                <div className="border border-black rounded-none overflow-x-auto">
+                  <table className="w-full text-left text-xs text-[#1A1A1A]">
+                    <thead className="bg-[#F9F9F7] text-black font-bold uppercase tracking-wider border-b border-black">
                       <tr>
                         {headers.map((hdr, idx) => (
-                          <th key={idx} className="px-3 py-2 font-semibold border-b border-slate-200 whitespace-nowrap">
+                          <th key={idx} className="px-3 py-2 border-r last:border-0 border-black font-semibold whitespace-nowrap">
                             {hdr}
                           </th>
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-black">
                       {parsedRows.slice(0, 4).map((row, rIdx) => (
-                        <tr key={rIdx} className="hover:bg-slate-50/50">
+                        <tr key={rIdx} className="hover:bg-[#F9F9F7]">
                           {headers.map((_, cIdx) => (
-                            <td key={cIdx} className="px-3 py-2 whitespace-nowrap">
+                            <td key={cIdx} className="px-3 py-2 border-r last:border-0 border-black font-mono font-medium whitespace-nowrap">
                               {row[cIdx] || <span className="text-slate-300">-</span>}
                             </td>
                           ))}
@@ -492,19 +487,19 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
               </div>
 
               {/* Merge Options */}
-              <div className="p-4 bg-blue-50/50 border border-blue-100 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="p-5 bg-[#F9F9F7] border-2 border-black rounded-none flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h4 className="text-xs font-semibold text-slate-700 mb-0.5">Import Action Strategy</h4>
-                  <p className="text-[11px] text-slate-500">Choose how to handle the items relative to existing stock.</p>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-[#1A1A1A] mb-1">Import Action Strategy</h4>
+                  <p className="text-[11px] text-slate-500">How would you like to compile this data with current listings?</p>
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <button
                     type="button"
                     onClick={() => setMergeOption('merge')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    className={`px-4 py-2 border border-black text-xs font-bold uppercase tracking-wider transition-all cursor-pointer rounded-none ${
                       mergeOption === 'merge'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                        ? 'bg-[#1A1A1A] text-white'
+                        : 'bg-white text-black hover:bg-slate-50'
                     }`}
                   >
                     Add / Merge to Stock
@@ -512,10 +507,10 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
                   <button
                     type="button"
                     onClick={() => setMergeOption('replace')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    className={`px-4 py-2 border border-red-600 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer rounded-none ${
                       mergeOption === 'replace'
                         ? 'bg-red-600 text-white'
-                        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                        : 'bg-white text-red-600 hover:bg-red-50'
                     }`}
                   >
                     Replace Entire Inventory
@@ -529,23 +524,23 @@ export default function ExcelImporter({ onImportComplete, onClose }: ExcelImport
 
         {/* Footer */}
         {parsedRows.length > 0 && (
-          <div className="px-6 py-4 bg-slate-50 border-t border-slate-150 flex justify-between items-center">
+          <div className="px-6 py-4 bg-[#F9F9F7] border-t-2 border-[#1A1A1A] flex justify-between items-center">
             <button
               onClick={handleClear}
-              className="px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-700 transition-colors"
+              className="text-xs font-black uppercase tracking-widest text-slate-500 hover:text-black transition-colors cursor-pointer"
             >
               Start Over
             </button>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 onClick={onClose}
-                className="px-4 py-2 border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                className="px-5 py-2 border-2 border-slate-300 text-slate-600 hover:bg-slate-100 text-xs font-bold uppercase tracking-widest rounded-none cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleImportSubmit}
-                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5"
+                className="px-6 py-2 bg-black hover:bg-white hover:text-black border-2 border-black text-white text-xs font-black uppercase tracking-widest transition-all rounded-none cursor-pointer flex items-center gap-1.5"
               >
                 <Check size={14} />
                 Bulk Import {parsedRows.length} Items

@@ -240,20 +240,20 @@ export default function BillingManager({
   return (
     <div className="space-y-4" id="billing-manager-container">
       
-      {/* Navigation sub-tabs */}
-      <div className="flex bg-slate-100 rounded-lg p-1 text-xs font-bold text-slate-600 self-start max-w-xs">
+      {/* Navigation sub-tabs - Editorial Aesthetic */}
+      <div className="flex border-b border-[#1A1A1A] text-xs font-bold text-[#1A1A1A] self-start w-full no-print">
         <button
           onClick={() => setActiveView('billing')}
-          className={`flex-1 py-2 px-4 rounded-md transition-colors text-center ${
-            activeView === 'billing' ? 'bg-white text-slate-800 shadow-3xs' : 'hover:text-slate-900'
+          className={`py-3 px-6 border-t border-l border-r border-[#1A1A1A] mr-1 font-display font-bold uppercase tracking-widest transition-colors cursor-pointer ${
+            activeView === 'billing' ? 'bg-[#1A1A1A] text-white' : 'bg-transparent text-[#1A1A1A] hover:bg-slate-100'
           }`}
         >
           Bill Maker
         </button>
         <button
           onClick={() => setActiveView('history')}
-          className={`flex-1 py-2 px-4 rounded-md transition-colors text-center ${
-            activeView === 'history' ? 'bg-white text-slate-800 shadow-3xs' : 'hover:text-slate-900'
+          className={`py-3 px-6 border-t border-l border-r border-[#1A1A1A] font-display font-bold uppercase tracking-widest transition-colors cursor-pointer ${
+            activeView === 'history' ? 'bg-[#1A1A1A] text-white' : 'bg-transparent text-[#1A1A1A] hover:bg-slate-100'
           }`}
         >
           Invoices Log
@@ -266,43 +266,43 @@ export default function BillingManager({
           {/* LEFT AREA: Invoice Details & Products Selector (Col 2) */}
           <div className="lg:col-span-2 space-y-4">
             
-            {/* Customer Details Block */}
-            <div className="bg-white p-5 rounded-xl border border-slate-200 space-y-4">
-              <div className="flex justify-between items-center border-b border-slate-100 pb-2">
-                <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider">Customer & Bill metadata</h3>
-                <span className="text-xs font-semibold text-blue-600 font-mono">{invoiceNo}</span>
+            {/* Customer Details Block - Editorial Aesthetic */}
+            <div className="bg-white p-6 rounded-none border-2 border-[#1A1A1A] space-y-4">
+              <div className="flex justify-between items-center border-b border-[#1A1A1A] pb-2">
+                <h3 className="font-black font-display text-xs uppercase tracking-widest text-[#1A1A1A]">Customer & Invoice Metadata</h3>
+                <span className="text-xs font-bold text-[#1A1A1A] font-mono border border-black bg-slate-100 px-2 py-0.5">{invoiceNo}</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">Customer / Client Name *</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Customer / Client Name *</label>
                   <input
                     type="text"
                     required
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-white border border-[#1A1A1A] text-xs p-2.5 focus:outline-none focus:ring-1 focus:ring-black"
                     placeholder="Company or Individual"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">Customer Phone Number</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Customer Phone Number</label>
                   <input
                     type="text"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-white border border-[#1A1A1A] text-xs p-2.5 focus:outline-none focus:ring-1 focus:ring-black"
                     placeholder="Contact mobile"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">Customer GSTIN (Tax No)</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Customer GSTIN (Tax No)</label>
                   <input
                     type="text"
                     maxLength={15}
                     value={customerGstin}
                     onChange={(e) => setCustomerGstin(e.target.value.toUpperCase())}
-                    className="w-full bg-slate-50 border border-slate-200 text-xs font-mono rounded-lg p-2 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-white border border-[#1A1A1A] text-xs font-mono p-2.5 focus:outline-none focus:ring-1 focus:ring-black"
                     placeholder="15-char GSTIN ID"
                   />
                 </div>
@@ -310,40 +310,40 @@ export default function BillingManager({
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-2">
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">Billing & Delivery Address</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Billing & Delivery Address</label>
                   <input
                     type="text"
                     value={customerAddress}
                     onChange={(e) => setCustomerAddress(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-white border border-[#1A1A1A] text-xs p-2.5 focus:outline-none focus:ring-1 focus:ring-black"
                     placeholder="Customer billing details..."
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-1">Invoice Date</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Invoice Date</label>
                   <input
                     type="date"
                     required
                     value={invoiceDate}
                     onChange={(e) => setInvoiceDate(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-white border border-[#1A1A1A] text-xs p-2.5 focus:outline-none"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Product Cart Builder */}
-            <div className="bg-white p-5 rounded-xl border border-slate-200 space-y-4">
-              <h3 className="font-bold text-slate-800 text-xs uppercase border-b border-slate-100 pb-2 tracking-wider">Log items delivered</h3>
+            {/* Product Cart Builder - Editorial Aesthetic */}
+            <div className="bg-white p-6 rounded-none border-2 border-[#1A1A1A] space-y-4">
+              <h3 className="font-black font-display text-xs uppercase border-b border-[#1A1A1A] pb-2 tracking-widest text-[#1A1A1A]">Log Items Delivered</h3>
               
               {/* Item Selector Form Row */}
-              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col md:flex-row items-end gap-3">
+              <div className="bg-[#F9F9F7] p-4 rounded-none border border-[#1A1A1A] flex flex-col md:flex-row items-end gap-3">
                 <div className="flex-1">
-                  <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">Search Catalog Product</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Search Catalog Product</label>
                   <select
                     value={selItemId}
                     onChange={(e) => setSelItemId(e.target.value)}
-                    className="w-full bg-white border border-slate-200 text-xs rounded-md p-1.5 focus:outline-hidden"
+                    className="w-full bg-white border border-[#1A1A1A] text-xs p-2 focus:outline-none focus:ring-1 focus:ring-black"
                   >
                     <option value="">-- Choose item from stock --</option>
                     {inventory.map(item => (
@@ -355,13 +355,13 @@ export default function BillingManager({
                 </div>
 
                 <div className="w-24">
-                  <label className="block text-[10px] font-semibold text-slate-500 mb-0.5">Quantity</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Quantity</label>
                   <input
                     type="number"
                     min={1}
                     value={selQty}
                     onChange={(e) => setSelQty(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-full bg-white border border-slate-200 text-xs rounded-md p-1.5 focus:outline-hidden"
+                    className="w-full bg-white border border-[#1A1A1A] text-xs p-2 focus:outline-none focus:ring-1 focus:ring-black"
                   />
                 </div>
 
@@ -371,10 +371,10 @@ export default function BillingManager({
                     id="selUseRate"
                     checked={selUseRate}
                     onChange={(e) => setSelUseRate(e.target.checked)}
-                    className="rounded-sm"
+                    className="w-4 h-4 border border-black focus:ring-0"
                   />
-                  <label htmlFor="selUseRate" className="text-[10px] text-slate-600 font-semibold cursor-pointer">
-                    Apply Wholesale Rate
+                  <label htmlFor="selUseRate" className="text-[10px] text-[#1A1A1A] font-bold uppercase tracking-wider cursor-pointer">
+                    Wholesale Rate
                   </label>
                 </div>
 
@@ -382,7 +382,7 @@ export default function BillingManager({
                   type="button"
                   onClick={handleAddItemToCart}
                   disabled={!selItemId}
-                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-md disabled:opacity-50 transition-colors flex items-center gap-1 shrink-0 h-8"
+                  className="px-6 py-2 bg-[#1A1A1A] hover:bg-white hover:text-black border border-black text-white text-xs font-bold uppercase tracking-widest disabled:opacity-50 transition-all flex items-center gap-1.5 shrink-0 h-9 rounded-none cursor-pointer"
                 >
                   <Plus size={12} /> Add
                 </button>
@@ -466,81 +466,81 @@ export default function BillingManager({
 
           </div>
 
-          {/* RIGHT COLUMN: Bill Calculations & Invoice Save Controls (Col 1) */}
+          {/* RIGHT COLUMN: Bill Calculations & Invoice Save Controls (Col 1) - Editorial Aesthetic */}
           <div className="space-y-4">
             
             {/* Calculation summary block */}
-            <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 text-xs border-b border-slate-100 pb-2 tracking-wider">Tax & Invoice Calculations</h3>
+            <div className="bg-white rounded-none border-2 border-[#1A1A1A] p-6 space-y-4 shadow-none">
+              <h3 className="font-black font-display text-xs border-b border-[#1A1A1A] pb-2 uppercase tracking-widest text-[#1A1A1A]">Tax & Invoice Calculations</h3>
 
-              <div className="space-y-2 text-xs">
+              <div className="space-y-2 text-xs font-medium">
                 
-                <div className="flex justify-between text-slate-500 font-medium">
+                <div className="flex justify-between text-slate-600">
                   <span>Taxable Sub-Total:</span>
-                  <span className="text-slate-800 font-semibold">₹{bill.subTotal.toFixed(2)}</span>
+                  <span className="text-black font-bold">₹{bill.subTotal.toFixed(2)}</span>
                 </div>
 
-                <div className="flex justify-between items-center text-slate-500">
-                  <div className="flex items-center gap-1">
-                    <span>IGST Interstate Toggle:</span>
+                <div className="flex justify-between items-center text-slate-600">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold uppercase tracking-wider text-[10px]">Interstate (IGST):</span>
                     <input
                       type="checkbox"
                       checked={isInterstate}
                       onChange={(e) => setIsInterstate(e.target.checked)}
-                      className="rounded-sm"
+                      className="w-4 h-4 border border-black focus:ring-0"
                     />
                   </div>
-                  <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-600 font-bold">
-                    {isInterstate ? 'IGST Applicable' : 'CGST + SGST splitting'}
+                  <span className="text-[9px] border border-black bg-[#F9F9F7] px-2 py-0.5 text-black font-bold uppercase tracking-wider">
+                    {isInterstate ? 'IGST 100%' : 'CGST + SGST'}
                   </span>
                 </div>
 
                 {isInterstate ? (
-                  <div className="flex justify-between text-slate-500">
+                  <div className="flex justify-between text-slate-600">
                     <span>IGST collected:</span>
-                    <span className="text-slate-800 font-semibold">₹{bill.gstTotal.toFixed(2)}</span>
+                    <span className="text-black font-bold">₹{bill.gstTotal.toFixed(2)}</span>
                   </div>
                 ) : (
                   <>
-                    <div className="flex justify-between text-slate-500">
+                    <div className="flex justify-between text-slate-600">
                       <span>CGST (half portion):</span>
-                      <span className="text-slate-800 font-semibold">₹{bill.cgst.toFixed(2)}</span>
+                      <span className="text-black font-bold">₹{bill.cgst.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-slate-500">
+                    <div className="flex justify-between text-slate-600">
                       <span>SGST (half portion):</span>
-                      <span className="text-slate-800 font-semibold">₹{bill.sgst.toFixed(2)}</span>
+                      <span className="text-black font-bold">₹{bill.sgst.toFixed(2)}</span>
                     </div>
                   </>
                 )}
 
                 {/* Discount input row */}
-                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-slate-500">Invoice Cash Discount (₹):</span>
+                <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
+                  <span className="text-slate-600">Invoice Cash Discount (₹):</span>
                   <input
                     type="number"
                     min={0}
                     value={discount || ''}
                     onChange={(e) => setDiscount(Math.max(0, parseFloat(e.target.value) || 0))}
-                    className="w-24 border border-slate-200 text-right rounded-md p-1 focus:outline-hidden focus:ring-1 focus:ring-blue-500 font-bold"
+                    className="w-24 border border-black text-right p-1 font-bold text-xs focus:outline-none focus:ring-1 focus:ring-black"
                     placeholder="₹ 0.00"
                   />
                 </div>
 
                 {/* GRAND TOTAL */}
-                <div className="pt-3 border-t border-slate-200 flex justify-between items-baseline">
-                  <span className="font-bold text-slate-800 text-sm">Invoice Grand Total:</span>
-                  <span className="font-black text-xl text-blue-600">₹{bill.grandTotal.toFixed(2)}</span>
+                <div className="pt-3 border-t border-black flex justify-between items-baseline">
+                  <span className="font-bold text-[#1A1A1A] text-xs uppercase tracking-widest">Grand Total:</span>
+                  <span className="font-black text-xl text-black font-mono">₹{bill.grandTotal.toFixed(2)}</span>
                 </div>
               </div>
 
               {/* Payment details configuration */}
-              <div className="space-y-3 pt-2">
+              <div className="space-y-3 pt-2 border-t border-slate-100">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1">Invoice Payment Mode</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Invoice Payment Mode</label>
                   <select
                     value={paymentMode}
                     onChange={(e) => setPaymentMode(e.target.value as any)}
-                    className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:outline-hidden"
+                    className="w-full bg-white border border-[#1A1A1A] text-xs p-2 focus:outline-none"
                   >
                     <option value="Cash">Cash Handover</option>
                     <option value="UPI">UPI Payment (GPay/Paytm)</option>
@@ -551,12 +551,12 @@ export default function BillingManager({
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1">Internal Billing Remarks</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Internal Billing Remarks</label>
                   <input
                     type="text"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:outline-hidden"
+                    className="w-full bg-white border border-[#1A1A1A] text-xs p-2 focus:outline-none"
                     placeholder="e.g. Delivered by Karan Singh"
                   />
                 </div>
@@ -564,7 +564,7 @@ export default function BillingManager({
                 <button
                   type="button"
                   onClick={handleSaveInvoice}
-                  className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition-colors shadow-xs flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-[#1A1A1A] hover:bg-white hover:text-black border-2 border-black text-white font-bold text-xs uppercase tracking-widest transition-all rounded-none cursor-pointer flex items-center justify-center gap-2"
                 >
                   <FileCheck size={16} />
                   Compile & Save GST Invoice
@@ -573,9 +573,9 @@ export default function BillingManager({
             </div>
 
             {/* Quick stock warning help */}
-            <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl flex items-start gap-2">
-              <Info size={16} className="text-slate-500 shrink-0 mt-0.5" />
-              <p className="text-[10px] text-slate-500 leading-normal">
+            <div className="bg-[#F9F9F7] border border-[#1A1A1A] p-4 rounded-none flex items-start gap-2">
+              <Info size={16} className="text-[#1A1A1A] shrink-0 mt-0.5" />
+              <p className="text-[10px] text-slate-600 leading-normal font-medium">
                 Saving this invoice will automatically subtract quantities from current catalog stock. Invoices are logged with the business logo config on the database profile.
               </p>
             </div>
@@ -587,43 +587,43 @@ export default function BillingManager({
       {activeView === 'history' && (
         <div className="space-y-4">
           
-          <div className="flex justify-between items-center bg-white p-3 rounded-lg border border-slate-200">
+          <div className="flex justify-between items-center bg-white p-4 border-2 border-[#1A1A1A] rounded-none">
             <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-[#1A1A1A]" />
               <input
                 type="text"
                 placeholder="Search invoice number, client name..."
                 value={invoiceSearch}
                 onChange={(e) => setInvoiceSearch(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg pl-8 pr-3 py-2 focus:outline-hidden"
+                className="w-full bg-white border border-black text-xs pl-10 pr-4 py-2.5 focus:outline-none rounded-none"
               />
             </div>
           </div>
 
           {/* Historical Logs List */}
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-2xs">
+          <div className="bg-white border-2 border-[#1A1A1A] rounded-none overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-slate-50 text-slate-500 border-b border-slate-100 font-semibold">
+                <thead className="bg-[#F9F9F7] text-[#1A1A1A] border-b-2 border-black font-bold uppercase tracking-wider">
                   <tr>
-                    <th className="px-5 py-3">Invoice No</th>
-                    <th className="px-3 py-3">Date</th>
-                    <th className="px-3 py-3">Customer / Client</th>
-                    <th className="px-3 py-3 text-center">Tax Split Mode</th>
-                    <th className="px-3 py-3 text-center">Payment Mode</th>
-                    <th className="px-3 py-3 text-right">Taxable Amt</th>
-                    <th className="px-3 py-3 text-right">Tax Value</th>
-                    <th className="px-3 py-3 text-right">Invoice Total</th>
-                    <th className="px-5 py-3 text-right">Actions</th>
+                    <th className="px-5 py-4">Invoice No</th>
+                    <th className="px-3 py-4">Date</th>
+                    <th className="px-3 py-4">Customer / Client</th>
+                    <th className="px-3 py-4 text-center">Tax Split Mode</th>
+                    <th className="px-3 py-4 text-center">Payment Mode</th>
+                    <th className="px-3 py-4 text-right">Taxable Amt</th>
+                    <th className="px-3 py-4 text-right">Tax Value</th>
+                    <th className="px-3 py-4 text-right">Invoice Total</th>
+                    <th className="px-5 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-black">
                   {invoices.filter(inv => 
                     inv.invoiceNo.toLowerCase().includes(invoiceSearch.toLowerCase()) ||
                     inv.customerName.toLowerCase().includes(invoiceSearch.toLowerCase())
                   ).length === 0 ? (
                     <tr>
-                      <td colSpan={9} className="px-5 py-8 text-center text-slate-400">
+                      <td colSpan={9} className="px-5 py-10 text-center text-slate-400 font-bold uppercase tracking-widest">
                         No billing transactions logged.
                       </td>
                     </tr>
@@ -632,35 +632,35 @@ export default function BillingManager({
                       inv.invoiceNo.toLowerCase().includes(invoiceSearch.toLowerCase()) ||
                       inv.customerName.toLowerCase().includes(invoiceSearch.toLowerCase())
                     ).map(inv => (
-                      <tr key={inv.id} className="hover:bg-slate-50/20">
-                        <td className="px-5 py-3 font-bold text-blue-600 font-mono">{inv.invoiceNo}</td>
-                        <td className="px-3 py-3 text-slate-500">{inv.date}</td>
-                        <td className="px-3 py-3">
-                          <div className="font-bold text-slate-800">{inv.customerName}</div>
-                          {inv.customerPhone && <div className="text-[10px] text-slate-400">{inv.customerPhone}</div>}
+                      <tr key={inv.id} className="hover:bg-[#F9F9F7]/50 transition-colors">
+                        <td className="px-5 py-4 font-black text-[#1A1A1A] font-mono">{inv.invoiceNo}</td>
+                        <td className="px-3 py-4 text-slate-500 font-mono font-bold">{inv.date}</td>
+                        <td className="px-3 py-4">
+                          <div className="font-bold text-black">{inv.customerName}</div>
+                          {inv.customerPhone && <div className="text-[10px] text-slate-400 font-bold">{inv.customerPhone}</div>}
                         </td>
-                        <td className="px-3 py-3 text-center">
-                          <span className={`px-2 py-0.5 rounded-sm text-[9px] font-semibold ${inv.isInterstate ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}`}>
+                        <td className="px-3 py-4 text-center">
+                          <span className={`px-2.5 py-0.5 border border-black text-[9px] font-black uppercase tracking-wider ${inv.isInterstate ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}`}>
                             {inv.isInterstate ? 'IGST' : 'CGST + SGST'}
                           </span>
                         </td>
-                        <td className="px-3 py-3 text-center">
-                          <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium text-[9px]">
+                        <td className="px-3 py-4 text-center">
+                          <span className="bg-slate-100 text-[#1A1A1A] border border-black px-2 py-0.5 font-bold uppercase text-[9px] tracking-wider">
                             {inv.paymentMode}
                           </span>
                         </td>
-                        <td className="px-3 py-3 text-right font-medium text-slate-700">₹{inv.subTotal.toFixed(2)}</td>
-                        <td className="px-3 py-3 text-right font-medium text-slate-600">₹{inv.gstTotal.toFixed(2)}</td>
-                        <td className="px-3 py-3 text-right font-bold text-slate-900">₹{inv.grandTotal.toFixed(2)}</td>
-                        <td className="px-5 py-3 text-right">
+                        <td className="px-3 py-4 text-right font-mono font-bold text-slate-600">₹{inv.subTotal.toFixed(2)}</td>
+                        <td className="px-3 py-4 text-right font-mono font-bold text-slate-600">₹{inv.gstTotal.toFixed(2)}</td>
+                        <td className="px-3 py-4 text-right font-mono font-black text-[#1A1A1A]">₹{inv.grandTotal.toFixed(2)}</td>
+                        <td className="px-5 py-4 text-right">
                           <button
                             onClick={() => {
                               setViewingInvoiceId(inv.id);
                               setActiveView('print');
                             }}
-                            className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded text-[10px] font-semibold flex items-center gap-1 shrink-0 inline-flex transition-colors cursor-pointer"
+                            className="px-3 py-1.5 bg-[#1A1A1A] hover:bg-white hover:text-black border border-black text-white text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shrink-0 inline-flex transition-colors cursor-pointer rounded-none"
                           >
-                            <Printer size={10} /> View & Print
+                            <Printer size={12} /> View & Print
                           </button>
                         </td>
                       </tr>
@@ -676,25 +676,25 @@ export default function BillingManager({
 
       {/* VIEW 3: Beautiful, authentic Indian GST Printable Invoice Copy */}
       {activeView === 'print' && activeInvoice && (
-        <div className="space-y-4 max-w-3xl mx-auto">
+        <div className="space-y-6 max-w-4xl mx-auto">
           
-          <div className="flex justify-between items-center bg-slate-50 p-4 border border-slate-200 rounded-xl no-print">
+          <div className="flex justify-between items-center bg-[#F9F9F7] p-5 border-2 border-[#1A1A1A] rounded-none no-print">
             <button
               onClick={() => setActiveView('billing')}
-              className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-semibold hover:bg-slate-50 transition-colors"
+              className="px-4 py-2.5 bg-white border-2 border-[#1A1A1A] text-black text-xs font-bold uppercase tracking-wider hover:bg-slate-100 transition-colors rounded-none cursor-pointer"
             >
               ← Back to Bill Maker
             </button>
             <div className="flex gap-2">
               <button
                 onClick={() => setActiveView('history')}
-                className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-semibold hover:bg-slate-50 transition-colors"
+                className="px-4 py-2.5 bg-white border-2 border-[#1A1A1A] text-black text-xs font-bold uppercase tracking-wider hover:bg-slate-100 transition-colors rounded-none cursor-pointer"
               >
                 Invoices Log
               </button>
               <button
                 onClick={handlePrint}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs"
+                className="px-5 py-2.5 bg-black hover:bg-white hover:text-black border-2 border-black text-white text-xs font-black uppercase tracking-wider transition-colors flex items-center gap-1.5 rounded-none cursor-pointer"
               >
                 <Printer size={14} /> Print Tax Invoice
               </button>
@@ -702,49 +702,49 @@ export default function BillingManager({
           </div>
 
           {/* PRINT CANVAS */}
-          <div className="bg-white border border-slate-300 p-8 shadow-xs rounded-xl text-slate-800 font-sans print:border-none print:shadow-none print:p-0" id="gst-invoice-print">
+          <div className="bg-white border-2 border-black p-8 text-black font-sans print:border-none print:p-0 rounded-none" id="gst-invoice-print">
             
             {/* Header / Brand Details */}
-            <div className="flex justify-between items-start border-b-2 border-slate-800 pb-4">
+            <div className="flex justify-between items-start border-b-2 border-black pb-5">
               <div className="space-y-1">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded-sm">Tax Invoice</span>
-                <h1 className="text-2xl font-black text-slate-900 leading-tight">{businessDetails.name}</h1>
-                <p className="text-xs text-slate-500 italic font-medium">{businessDetails.tagline}</p>
-                <p className="text-[10px] text-slate-500 font-medium max-w-md mt-1">{businessDetails.address}</p>
-                <p className="text-[10px] text-slate-500 font-semibold">Phone: {businessDetails.phone} | Email: {businessDetails.email}</p>
+                <span className="text-[9px] font-black text-white bg-black uppercase tracking-widest px-2 py-1 rounded-none inline-block">Tax Invoice</span>
+                <h1 className="text-2xl font-black text-[#1A1A1A] leading-tight font-display tracking-tight uppercase mt-2">{businessDetails.name}</h1>
+                <p className="text-xs text-slate-500 italic font-bold uppercase tracking-wider">{businessDetails.tagline}</p>
+                <p className="text-[10px] text-slate-600 font-medium max-w-md mt-1">{businessDetails.address}</p>
+                <p className="text-[10px] text-black font-bold">Phone: {businessDetails.phone} | Email: {businessDetails.email}</p>
               </div>
 
               <div className="text-right space-y-1 font-mono text-[10px]">
-                <div className="p-2 bg-slate-50 border border-slate-200 rounded-lg text-left">
-                  <p className="text-slate-400 font-sans uppercase font-bold text-[8px] tracking-wider">GSTIN NUMBER</p>
-                  <p className="font-bold text-slate-800 text-xs">{businessDetails.gstin}</p>
-                  <p className="text-[9px] text-slate-500 font-sans mt-0.5">State Code: {businessDetails.stateCode}</p>
+                <div className="p-3 bg-[#F9F9F7] border-2 border-black rounded-none text-left">
+                  <p className="text-slate-500 font-sans uppercase font-bold text-[8px] tracking-widest">GSTIN NUMBER</p>
+                  <p className="font-black text-black text-xs font-mono">{businessDetails.gstin}</p>
+                  <p className="text-[9px] text-slate-500 font-sans mt-0.5 font-bold uppercase tracking-wider">State Code: {businessDetails.stateCode}</p>
                 </div>
               </div>
             </div>
 
             {/* Bill details split */}
-            <div className="grid grid-cols-2 gap-4 py-4 border-b border-slate-150">
+            <div className="grid grid-cols-2 gap-4 py-5 border-b-2 border-black">
               <div className="space-y-1">
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">BILLED TO (BUYER):</p>
-                <p className="font-bold text-slate-800 text-xs">{activeInvoice.customerName}</p>
-                {activeInvoice.customerAddress && <p className="text-[10px] text-slate-500 leading-relaxed">{activeInvoice.customerAddress}</p>}
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">BILLED TO (BUYER):</p>
+                <p className="font-bold text-[#1A1A1A] text-xs">{activeInvoice.customerName}</p>
+                {activeInvoice.customerAddress && <p className="text-[10px] text-slate-500 leading-relaxed font-serif italic">{activeInvoice.customerAddress}</p>}
                 {activeInvoice.customerPhone && <p className="text-[10px] text-slate-500">Phone: {activeInvoice.customerPhone}</p>}
                 {activeInvoice.customerGstin ? (
-                  <p className="text-[10px] font-semibold text-slate-700 bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-sm inline-block font-mono mt-1">
+                  <p className="text-[10px] font-bold text-black bg-slate-50 border border-black px-2.5 py-0.5 rounded-none inline-block font-mono mt-1">
                     GSTIN: {activeInvoice.customerGstin}
                   </p>
                 ) : (
-                  <p className="text-[9px] text-slate-400">UNREGISTERED CONSUMER (B2C)</p>
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">UNREGISTERED CONSUMER (B2C)</p>
                 )}
               </div>
 
               <div className="text-right space-y-1 text-xs">
-                <div className="inline-block text-left space-y-1 border-l border-slate-200 pl-4">
-                  <p className="text-slate-500"><strong>Invoice No:</strong> <strong className="text-blue-600 font-mono text-sm">{activeInvoice.invoiceNo}</strong></p>
+                <div className="inline-block text-left space-y-1 border-l border-black pl-4">
+                  <p className="text-slate-500"><strong>Invoice No:</strong> <strong className="text-black font-mono text-sm">{activeInvoice.invoiceNo}</strong></p>
                   <p className="text-slate-500"><strong>Invoice Date:</strong> <strong className="text-slate-800">{activeInvoice.date}</strong></p>
                   <p className="text-slate-500"><strong>Place of Supply:</strong> {activeInvoice.isInterstate ? 'Interstate' : 'Intrastate (Local)'}</p>
-                  <p className="text-slate-500"><strong>Payment Mode:</strong> <span className="bg-slate-100 px-1.5 py-0.5 rounded font-bold text-[9px] text-slate-700">{activeInvoice.paymentMode}</span></p>
+                  <p className="text-slate-500"><strong>Payment Mode:</strong> <span className="bg-slate-100 border border-black px-1.5 py-0.5 font-bold text-[9px] text-[#1A1A1A]">{activeInvoice.paymentMode}</span></p>
                 </div>
               </div>
             </div>
@@ -753,54 +753,54 @@ export default function BillingManager({
             <div className="py-4">
               <table className="w-full text-left text-[11px] border-collapse">
                 <thead>
-                  <tr className="border-b-2 border-slate-800 bg-slate-50 text-[10px] text-slate-600 uppercase font-bold">
-                    <th className="py-2 pl-2">#</th>
-                    <th className="py-2">Item Description</th>
-                    <th className="py-2 text-center">HSN</th>
-                    <th className="py-2 text-right">Qty</th>
-                    <th className="py-2 text-right">Rate (₹)</th>
-                    <th className="py-2 text-right">Taxable Amt</th>
+                  <tr className="border-b-2 border-black bg-[#F9F9F7] text-[9px] text-[#1A1A1A] uppercase font-black tracking-wider">
+                    <th className="py-3 pl-2">#</th>
+                    <th className="py-3">Item Description</th>
+                    <th className="py-3 text-center">HSN</th>
+                    <th className="py-3 text-right">Qty</th>
+                    <th className="py-3 text-right">Rate (₹)</th>
+                    <th className="py-3 text-right">Taxable Amt</th>
                     {activeInvoice.isInterstate ? (
                       <>
-                        <th className="py-2 text-right">IGST %</th>
-                        <th className="py-2 text-right">IGST Amt</th>
+                        <th className="py-3 text-right">IGST %</th>
+                        <th className="py-3 text-right">IGST Amt</th>
                       </>
                     ) : (
                       <>
-                        <th className="py-2 text-right">CGST %</th>
-                        <th className="py-2 text-right">CGST Amt</th>
-                        <th className="py-2 text-right">SGST %</th>
-                        <th className="py-2 text-right">SGST Amt</th>
+                        <th className="py-3 text-right">CGST %</th>
+                        <th className="py-3 text-right">CGST Amt</th>
+                        <th className="py-3 text-right">SGST %</th>
+                        <th className="py-3 text-right">SGST Amt</th>
                       </>
                     )}
-                    <th className="py-2 pr-2 text-right">Net Total (₹)</th>
+                    <th className="py-3 pr-2 text-right">Net Total (₹)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 font-medium">
+                <tbody className="divide-y divide-black font-semibold text-black">
                   {activeInvoice.items.map((item, idx) => {
                     const basePrice = item.taxableAmount / item.quantity;
                     return (
                       <tr key={idx} className="hover:bg-slate-50/20">
-                        <td className="py-2 pl-2 text-slate-400">{idx + 1}</td>
-                        <td className="py-2 font-bold text-slate-800">{item.name}</td>
-                        <td className="py-2 text-center font-mono text-[10px] text-slate-500">{item.hsnCode}</td>
-                        <td className="py-2 text-right font-semibold">{item.quantity}</td>
-                        <td className="py-2 text-right font-semibold">₹{basePrice.toFixed(2)}</td>
-                        <td className="py-2 text-right">₹{item.taxableAmount.toFixed(2)}</td>
+                        <td className="py-3 pl-2 text-slate-400 font-mono">{idx + 1}</td>
+                        <td className="py-3 font-bold text-black">{item.name}</td>
+                        <td className="py-3 text-center font-mono text-[10px] text-slate-500">{item.hsnCode}</td>
+                        <td className="py-3 text-right font-mono">{item.quantity}</td>
+                        <td className="py-3 text-right font-mono">₹{basePrice.toFixed(2)}</td>
+                        <td className="py-3 text-right font-mono">₹{item.taxableAmount.toFixed(2)}</td>
                         {activeInvoice.isInterstate ? (
                           <>
-                            <td className="py-2 text-right">{item.gstPercentage}%</td>
-                            <td className="py-2 text-right">₹{item.gstAmount.toFixed(2)}</td>
+                            <td className="py-3 text-right font-mono">{item.gstPercentage}%</td>
+                            <td className="py-3 text-right font-mono">₹{item.gstAmount.toFixed(2)}</td>
                           </>
                         ) : (
                           <>
-                            <td className="py-2 text-right">{item.gstPercentage / 2}%</td>
-                            <td className="py-2 text-right">₹{(item.gstAmount / 2).toFixed(2)}</td>
-                            <td className="py-2 text-right">{item.gstPercentage / 2}%</td>
-                            <td className="py-2 text-right">₹{(item.gstAmount / 2).toFixed(2)}</td>
+                            <td className="py-3 text-right font-mono">{item.gstPercentage / 2}%</td>
+                            <td className="py-3 text-right font-mono">₹{(item.gstAmount / 2).toFixed(2)}</td>
+                            <td className="py-3 text-right font-mono">{item.gstPercentage / 2}%</td>
+                            <td className="py-3 text-right font-mono">₹{(item.gstAmount / 2).toFixed(2)}</td>
                           </>
                         )}
-                        <td className="py-2 pr-2 text-right font-bold text-slate-900">₹{item.totalAmount.toFixed(2)}</td>
+                        <td className="py-3 pr-2 text-right font-black font-mono text-black">₹{item.totalAmount.toFixed(2)}</td>
                       </tr>
                     );
                   })}
@@ -809,69 +809,69 @@ export default function BillingManager({
             </div>
 
             {/* Calculations Blocks */}
-            <div className="grid grid-cols-2 gap-6 pt-4 border-t-2 border-slate-800">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-5 border-t-2 border-black">
               {/* Left Details (Words, bank details) */}
               <div className="space-y-4 text-[10px]">
-                <div className="bg-slate-50 p-2.5 rounded border border-slate-100">
-                  <p className="text-slate-400 uppercase font-bold text-[8px] tracking-wider mb-0.5">Amount Chargeable (in Words)</p>
-                  <p className="font-semibold text-slate-700 capitalize">{numberToWords(activeInvoice.grandTotal)}</p>
+                <div className="bg-[#F9F9F7] p-3 border border-black rounded-none">
+                  <p className="text-slate-500 uppercase font-black text-[8px] tracking-widest mb-1">Amount Chargeable (in Words)</p>
+                  <p className="font-bold text-black capitalize font-serif italic text-xs">{numberToWords(activeInvoice.grandTotal)}</p>
                 </div>
 
                 {/* Bank nets transfer details */}
                 {businessDetails.bankName && (
-                  <div className="bg-slate-50 p-2.5 rounded border border-slate-100 space-y-1">
-                    <p className="text-slate-400 uppercase font-bold text-[8px] tracking-wider flex items-center gap-1">
-                      <Landmark size={10} className="text-blue-600" />
+                  <div className="bg-white p-3 border border-black space-y-1.5 rounded-none">
+                    <p className="text-black uppercase font-black text-[8px] tracking-widest flex items-center gap-1">
+                      <Landmark size={12} className="text-black" />
                       Remittance / Bank Account Details
                     </p>
-                    <div className="grid grid-cols-2 text-slate-600 font-medium leading-relaxed gap-x-2">
-                      <span><strong>Bank Name:</strong> {businessDetails.bankName}</span>
-                      <span><strong>IFSC Code:</strong> <strong className="font-mono text-slate-700">{businessDetails.bankIfsc}</strong></span>
-                      <span className="col-span-2"><strong>A/c Number:</strong> <strong className="font-mono text-blue-600">{businessDetails.bankAccountNo}</strong></span>
+                    <div className="grid grid-cols-2 text-slate-600 font-bold leading-relaxed gap-x-3 text-[10px]">
+                      <span><strong>Bank:</strong> {businessDetails.bankName}</span>
+                      <span><strong>IFSC:</strong> <strong className="font-mono text-black">{businessDetails.bankIfsc}</strong></span>
+                      <span className="col-span-2"><strong>Account Number:</strong> <strong className="font-mono text-black underline">{businessDetails.bankAccountNo}</strong></span>
                     </div>
                   </div>
                 )}
 
                 {activeInvoice.notes && (
-                  <p className="text-[10px] text-slate-400 italic"><strong>Billing Remarks:</strong> "{activeInvoice.notes}"</p>
+                  <p className="text-[10px] text-slate-400 italic font-serif"><strong>Billing Remarks:</strong> "{activeInvoice.notes}"</p>
                 )}
               </div>
 
               {/* Right Totals summary */}
               <div className="text-right space-y-2 text-xs">
-                <div className="flex justify-between border-b border-slate-100 pb-1.5 text-slate-500 font-medium">
+                <div className="flex justify-between border-b border-slate-200 pb-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
                   <span>Total Taxable Value:</span>
-                  <span className="text-slate-800 font-bold">₹{activeInvoice.subTotal.toFixed(2)}</span>
+                  <span className="text-black font-black font-mono">₹{activeInvoice.subTotal.toFixed(2)}</span>
                 </div>
 
                 {activeInvoice.isInterstate ? (
-                  <div className="flex justify-between border-b border-slate-100 pb-1.5 text-slate-500 font-medium">
+                  <div className="flex justify-between border-b border-slate-200 pb-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
                     <span>Integrated Tax (IGST):</span>
-                    <span className="text-slate-800 font-bold">₹{activeInvoice.gstTotal.toFixed(2)}</span>
+                    <span className="text-black font-black font-mono">₹{activeInvoice.gstTotal.toFixed(2)}</span>
                   </div>
                 ) : (
                   <>
-                    <div className="flex justify-between text-slate-500 font-medium">
+                    <div className="flex justify-between text-slate-500 font-bold uppercase tracking-wider text-[10px]">
                       <span>Central Tax (CGST):</span>
-                      <span className="text-slate-800 font-bold">₹{activeInvoice.cgst.toFixed(2)}</span>
+                      <span className="text-black font-black font-mono">₹{activeInvoice.cgst.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between border-b border-slate-100 pb-1.5 text-slate-500 font-medium">
+                    <div className="flex justify-between border-b border-slate-200 pb-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
                       <span>State Tax (SGST):</span>
-                      <span className="text-slate-800 font-bold">₹{activeInvoice.sgst.toFixed(2)}</span>
+                      <span className="text-black font-black font-mono">₹{activeInvoice.sgst.toFixed(2)}</span>
                     </div>
                   </>
                 )}
 
                 {activeInvoice.discount > 0 && (
-                  <div className="flex justify-between border-b border-slate-100 pb-1.5 text-slate-500 font-medium">
+                  <div className="flex justify-between border-b border-slate-200 pb-1.5 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
                     <span>Discount Allowed:</span>
-                    <span className="text-emerald-700 font-bold">- ₹{activeInvoice.discount.toFixed(2)}</span>
+                    <span className="text-emerald-700 font-black font-mono">- ₹{activeInvoice.discount.toFixed(2)}</span>
                   </div>
                 )}
 
                 <div className="flex justify-between pt-1.5 items-baseline">
-                  <span className="font-black text-slate-800 text-sm">Grand Net Payable:</span>
-                  <span className="font-black text-lg text-slate-900 border-b-2 border-double border-slate-800">
+                  <span className="font-black text-black text-sm uppercase tracking-widest">Grand Net Payable:</span>
+                  <span className="font-black text-lg text-black border-b-2 border-double border-black font-mono">
                     ₹{activeInvoice.grandTotal.toFixed(2)}
                   </span>
                 </div>
@@ -879,10 +879,10 @@ export default function BillingManager({
             </div>
 
             {/* Terms and signature */}
-            <div className="grid grid-cols-2 gap-4 pt-6 mt-6 border-t border-slate-150 text-[9px] text-slate-400 leading-normal">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 mt-6 border-t-2 border-black text-[9px] text-slate-400 leading-normal">
               <div>
-                <p className="font-bold text-slate-500 uppercase tracking-wide text-[8px] mb-1">Terms & Conditions:</p>
-                <div className="whitespace-pre-line text-slate-400 italic">
+                <p className="font-black text-slate-500 uppercase tracking-widest text-[8px] mb-1">Terms & Conditions:</p>
+                <div className="whitespace-pre-line text-slate-500 italic font-medium">
                   {businessDetails.termsAndConditions}
                 </div>
               </div>
@@ -890,8 +890,8 @@ export default function BillingManager({
               <div className="text-right flex flex-col justify-end items-end h-24">
                 <p className="text-[10px] font-bold text-slate-700">For {businessDetails.name}</p>
                 <div className="flex-1"></div>
-                <div className="border-t border-slate-300 w-44 pt-1 mt-4">
-                  <p className="text-[8px] font-semibold text-slate-500 uppercase">Authorized Signatory</p>
+                <div className="border-t border-slate-400 w-48 pt-1 mt-4">
+                  <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Authorized Signatory</p>
                 </div>
               </div>
             </div>

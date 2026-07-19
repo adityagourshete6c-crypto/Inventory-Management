@@ -43,7 +43,6 @@ export default function ReportSummary({ invoices, employees }: ReportSummaryProp
       revenue += inv.grandTotal;
       gstCollected += inv.gstTotal;
       
-      // Calculate costs to determine gross profits
       inv.items.forEach(item => {
         // we can find the matching product or use a generic 30% margin fallback if not found,
         // but let's assume standard cost of item
@@ -56,13 +55,10 @@ export default function ReportSummary({ invoices, employees }: ReportSummaryProp
     // Employee payroll calculation for the selected period
     let payrollTotal = 0;
     if (reportTab === 'daily') {
-      // daily salary share (monthly divided by 30)
       payrollTotal = employees.reduce((sum, emp) => emp.isActive ? sum + (emp.salary / 30) : sum, 0);
     } else if (reportTab === 'monthly') {
-      // full month salary
       payrollTotal = employees.reduce((sum, emp) => emp.isActive ? sum + emp.salary : sum, 0);
     } else {
-      // yearly salary
       payrollTotal = employees.reduce((sum, emp) => emp.isActive ? sum + (emp.salary * 12) : sum, 0);
     }
 
@@ -95,28 +91,28 @@ export default function ReportSummary({ invoices, employees }: ReportSummaryProp
     <div className="space-y-6" id="reports-summary-container">
       
       {/* Top filter tabs */}
-      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
-        <div className="flex bg-slate-100 rounded-lg p-1 text-xs font-bold text-slate-600 max-w-xs self-start">
+      <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-white p-5 border-2 border-[#1A1A1A] rounded-none">
+        <div className="flex border-2 border-[#1A1A1A] p-0.5 text-[10px] font-black uppercase tracking-widest bg-[#F9F9F7] rounded-none max-w-sm">
           <button
             onClick={() => setReportTab('daily')}
-            className={`flex-1 py-2 px-4 rounded-md transition-colors text-center ${
-              reportTab === 'daily' ? 'bg-white text-slate-800 shadow-3xs' : 'hover:text-slate-900'
+            className={`py-2.5 px-4 rounded-none transition-colors text-center cursor-pointer ${
+              reportTab === 'daily' ? 'bg-[#1A1A1A] text-white' : 'text-black hover:bg-slate-100'
             }`}
           >
             Daily Summary
           </button>
           <button
             onClick={() => setReportTab('monthly')}
-            className={`flex-1 py-2 px-4 rounded-md transition-colors text-center ${
-              reportTab === 'monthly' ? 'bg-white text-slate-800 shadow-3xs' : 'hover:text-slate-900'
+            className={`py-2.5 px-4 rounded-none transition-colors text-center cursor-pointer ${
+              reportTab === 'monthly' ? 'bg-[#1A1A1A] text-white' : 'text-black hover:bg-slate-100'
             }`}
           >
             Monthly Summary
           </button>
           <button
             onClick={() => setReportTab('yearly')}
-            className={`flex-1 py-2 px-4 rounded-md transition-colors text-center ${
-              reportTab === 'yearly' ? 'bg-white text-slate-800 shadow-3xs' : 'hover:text-slate-900'
+            className={`py-2.5 px-4 rounded-none transition-colors text-center cursor-pointer ${
+              reportTab === 'yearly' ? 'bg-[#1A1A1A] text-white' : 'text-black hover:bg-slate-100'
             }`}
           >
             Yearly Summary
@@ -124,10 +120,10 @@ export default function ReportSummary({ invoices, employees }: ReportSummaryProp
         </div>
 
         {/* Date Filter selector */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-slate-500 flex items-center gap-1">
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-black uppercase tracking-widest text-[#1A1A1A] flex items-center gap-1.5">
             <Calendar size={14} />
-            Period Selector:
+            Period:
           </span>
           
           {reportTab === 'daily' && (
@@ -135,7 +131,7 @@ export default function ReportSummary({ invoices, employees }: ReportSummaryProp
               type="date"
               value={selectedDay}
               onChange={(e) => setSelectedDay(e.target.value)}
-              className="bg-slate-50 border border-slate-200 text-xs font-semibold rounded-lg p-2 text-slate-700"
+              className="bg-white border-2 border-black text-xs font-bold uppercase tracking-wider p-2.5 text-[#1A1A1A] rounded-none focus:outline-none"
             />
           )}
 
@@ -144,7 +140,7 @@ export default function ReportSummary({ invoices, employees }: ReportSummaryProp
               type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="bg-slate-50 border border-slate-200 text-xs font-semibold rounded-lg p-2 text-slate-700"
+              className="bg-white border-2 border-black text-xs font-bold uppercase tracking-wider p-2.5 text-[#1A1A1A] rounded-none focus:outline-none"
             />
           )}
 
@@ -152,10 +148,10 @@ export default function ReportSummary({ invoices, employees }: ReportSummaryProp
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="bg-slate-50 border border-slate-200 text-xs font-semibold rounded-lg p-2 text-slate-700"
+              className="bg-white border-2 border-black text-xs font-bold uppercase tracking-wider p-2.5 text-[#1A1A1A] rounded-none focus:outline-none"
             >
               {['2024', '2025', '2026', '2027'].map(yr => (
-                <option key={yr} value={yr}>{yr} Financial Year</option>
+                <option key={yr} value={yr}>{yr} Fiscal Year</option>
               ))}
             </select>
           )}
@@ -163,50 +159,50 @@ export default function ReportSummary({ invoices, employees }: ReportSummaryProp
       </div>
 
       {/* Main KPI Stat boxes */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-2xs space-y-1">
+        <div className="bg-white p-5 border-2 border-[#1A1A1A] rounded-none space-y-1">
           <div className="flex justify-between items-center text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Gross Revenue (Sales)</span>
-            <TrendingUp size={16} className="text-blue-500" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Gross Revenue (Sales)</span>
+            <TrendingUp size={16} className="text-black" />
           </div>
-          <p className="text-2xl font-black text-slate-800">
+          <p className="text-2xl font-black font-mono text-black">
             ₹{metrics.revenue.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
           </p>
-          <p className="text-[10px] text-slate-400 font-medium">Includes tax collections</p>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Includes GST collected</p>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-2xs space-y-1">
+        <div className="bg-[#F9F9F7] p-5 border-2 border-[#1A1A1A] rounded-none space-y-1">
           <div className="flex justify-between items-center text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Estimated Profit</span>
-            <DollarSign size={16} className="text-emerald-500" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-[#1A1A1A]">Estimated Gross Profit</span>
+            <DollarSign size={16} className="text-black" />
           </div>
-          <p className="text-2xl font-black text-emerald-600">
+          <p className="text-2xl font-black font-mono text-emerald-700">
             ₹{metrics.grossProfit.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
           </p>
-          <p className="text-[10px] text-slate-400 font-medium">Derived gross product margins</p>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Est. product margins</p>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-2xs space-y-1">
+        <div className="bg-white p-5 border-2 border-[#1A1A1A] rounded-none space-y-1">
           <div className="flex justify-between items-center text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider">GST Collected</span>
-            <Percent size={16} className="text-purple-500" />
+            <span className="text-[10px] font-black uppercase tracking-widest">GST Collected</span>
+            <Percent size={16} className="text-black" />
           </div>
-          <p className="text-2xl font-black text-purple-600">
+          <p className="text-2xl font-black font-mono text-[#1A1A1A]">
             ₹{metrics.gstCollected.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
           </p>
-          <p className="text-[10px] text-slate-400 font-medium">CGST / SGST liability</p>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest font-mono">CGST / SGST Total</p>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-2xs space-y-1">
+        <div className="bg-white p-5 border-2 border-[#1A1A1A] rounded-none space-y-1">
           <div className="flex justify-between items-center text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Staff Salaries Expense</span>
-            <UserCheck size={16} className="text-amber-500" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Staff Salaries</span>
+            <UserCheck size={16} className="text-black" />
           </div>
-          <p className="text-2xl font-black text-amber-600">
+          <p className="text-2xl font-black font-mono text-[#1A1A1A]">
             ₹{metrics.payrollTotal.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
           </p>
-          <p className="text-[10px] text-slate-400 font-medium">Pro-rata salary commitment</p>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Pro-rata payroll cost</p>
         </div>
 
       </div>
@@ -215,58 +211,58 @@ export default function ReportSummary({ invoices, employees }: ReportSummaryProp
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Sales Performance Visualizer (Col 2) */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-5 space-y-4 shadow-2xs">
-          <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-            <BarChart2 size={14} className="text-blue-600" />
+        <div className="lg:col-span-2 bg-white border-2 border-[#1A1A1A] p-6 space-y-4 rounded-none">
+          <h3 className="text-xs font-black text-[#1A1A1A] uppercase tracking-widest flex items-center gap-1.5 font-display italic">
+            <BarChart2 size={14} className="text-black" />
             Monthly Sales Distribution Trend ({selectedYear})
           </h3>
 
           {/* Graphical Bars */}
-          <div className="h-64 flex items-end gap-3 pt-6 pb-2 px-4 border-b border-l border-slate-100">
+          <div className="h-64 flex items-end gap-3 pt-6 pb-2 px-4 border-b-2 border-l-2 border-[#1A1A1A]">
             {trendData.map((data, idx) => {
-              const heightPercentage = Math.max(5, (data.amount / maxTrendAmount) * 100);
+              const heightPercentage = Math.max(4, (data.amount / maxTrendAmount) * 100);
               return (
-                <div key={idx} className="flex-1 flex flex-col items-center gap-2 group relative">
+                <div key={idx} className="flex-1 flex flex-col items-center gap-2 group relative h-full justify-end">
                   
                   {/* Tooltip on hover */}
-                  <div className="absolute bottom-full mb-1 bg-slate-800 text-white text-[9px] font-mono px-1.5 py-0.5 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                  <div className="absolute bottom-full mb-1 bg-black text-white text-[10px] font-mono px-2 py-0.5 rounded-none shadow-none opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
                     ₹{data.amount.toLocaleString()}
                   </div>
 
                   <div 
                     style={{ height: `${heightPercentage}%` }}
-                    className={`w-full rounded-t-xs transition-all duration-500 ${
-                      data.amount > 0 ? 'bg-blue-600 group-hover:bg-blue-500' : 'bg-slate-100'
+                    className={`w-full transition-all duration-300 border-2 border-black rounded-none ${
+                      data.amount > 0 ? 'bg-black hover:bg-white' : 'bg-slate-50'
                     }`}
                   />
-                  <span className="text-[10px] text-slate-400 font-bold font-sans">{data.month}</span>
+                  <span className="text-[10px] text-[#1A1A1A] font-black uppercase tracking-wider font-sans">{data.month}</span>
                 </div>
               );
             })}
           </div>
 
-          <p className="text-[10px] text-slate-400 text-center">Interactive monthly distribution charts derived from logged business tax invoices</p>
+          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400 text-center">Charts represent continuous monthly dispatch metrics fetched directly from local stores</p>
         </div>
 
         {/* Deliveries & Invoices Breakdowns (Col 1) */}
-        <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-4 shadow-2xs">
-          <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-            Transaction Activity Logs
+        <div className="bg-[#F9F9F7] border-2 border-[#1A1A1A] p-5 space-y-4 rounded-none">
+          <h3 className="text-xs font-black uppercase tracking-widest text-[#1A1A1A] font-display italic">
+            Ledger Dispatch logs
           </h3>
 
-          <div className="space-y-3 max-h-[250px] overflow-y-auto">
+          <div className="space-y-3 max-h-[260px] overflow-y-auto pr-1">
             {periodInvoices.length === 0 ? (
-              <p className="text-xs text-slate-400 text-center py-8">No business sales logged for this period.</p>
+              <p className="text-xs text-slate-400 text-center py-12 border border-dashed border-slate-300">No records filed for the period.</p>
             ) : (
-              periodInvoices.slice(0, 5).map(inv => (
-                <div key={inv.id} className="p-3 border border-slate-100 rounded-lg flex justify-between items-center bg-slate-50/40">
+              periodInvoices.slice(0, 6).map(inv => (
+                <div key={inv.id} className="p-3 bg-white border border-[#1A1A1A] rounded-none flex justify-between items-center">
                   <div>
-                    <p className="font-bold text-slate-800 text-xs">{inv.customerName}</p>
-                    <p className="text-[10px] text-slate-400 mt-0.5">{inv.date} • {inv.invoiceNo}</p>
+                    <p className="font-bold text-black text-xs">{inv.customerName}</p>
+                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">{inv.date} • {inv.invoiceNo}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-bold text-slate-900">₹{inv.grandTotal.toFixed(2)}</p>
-                    <p className="text-[9px] text-slate-400 uppercase tracking-wider">{inv.paymentMode}</p>
+                    <p className="text-xs font-black font-mono text-black">₹{inv.grandTotal.toFixed(2)}</p>
+                    <p className="text-[8px] bg-slate-100 text-[#1A1A1A] px-1.5 py-0.5 font-bold uppercase tracking-wider border border-black inline-block mt-0.5">{inv.paymentMode}</p>
                   </div>
                 </div>
               ))

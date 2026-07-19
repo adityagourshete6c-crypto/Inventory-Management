@@ -86,9 +86,7 @@ export default function EmployeeManager({ employees, onUpdateEmployees }: Employ
   const halfDayCount = employees.filter(e => e.isActive && e.attendance[selectedDate] === 'Half-Day').length;
   const leaveCount = employees.filter(e => e.isActive && e.attendance[selectedDate] === 'Leave').length;
   const absentCount = employees.filter(e => e.isActive && e.attendance[selectedDate] === 'Absent').length;
-  const pendingCount = totalEmployeesCount - (presentCount + halfDayCount + leaveCount + absentCount);
 
-  // Month-Year calculations for salary
   const currentYearMonth = selectedDate.slice(0, 7); // e.g. "2026-07"
   
   const getEmployeeStatsForMonth = (emp: Employee, yearMonth: string) => {
@@ -106,8 +104,7 @@ export default function EmployeeManager({ employees, onUpdateEmployees }: Employ
       }
     });
 
-    const payableDays = presents + (halfDays * 0.5) + leaves; // assuming leaves are paid, absents/half-days deducted
-    const actualWorkingDays = presents + halfDays + absents + leaves;
+    const payableDays = presents + (halfDays * 0.5) + leaves;
     const unpaidAbsents = absents + (halfDays * 0.5);
     const dayRate = emp.salary / 30; // standard 30-day calculation
     const payableSalary = Math.max(0, emp.salary - (unpaidAbsents * dayRate));
@@ -131,19 +128,19 @@ export default function EmployeeManager({ employees, onUpdateEmployees }: Employ
         {/* Search and Action Header */}
         <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-3 h-4 w-4 text-black" />
             <input
               type="text"
               placeholder="Search staff members by name or designation..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white border border-slate-200 text-xs rounded-lg pl-9 pr-4 py-2.5 focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+              className="w-full bg-white border-2 border-[#1A1A1A] text-xs pl-10 pr-4 py-3 focus:outline-none rounded-none"
             />
           </div>
 
           <button
             onClick={() => setIsEmployeeFormOpen(true)}
-            className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0"
+            className="px-4 py-3 bg-black hover:bg-white hover:text-black border-2 border-black text-white text-xs font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-1.5 rounded-none cursor-pointer"
           >
             <Plus size={14} />
             Hire New Employee
@@ -151,71 +148,73 @@ export default function EmployeeManager({ employees, onUpdateEmployees }: Employ
         </div>
 
         {/* Employee Directory and Payroll Table */}
-        <div className="bg-white rounded-xl shadow-2xs border border-slate-200 overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-150 bg-slate-50 flex justify-between items-center">
-            <h3 className="font-semibold text-slate-800 text-xs flex items-center gap-1.5">
-              <Award size={14} className="text-blue-600" />
-              Staff Profiles & Monthly Payroll ({currentYearMonth})
+        <div className="bg-white border-2 border-[#1A1A1A] rounded-none overflow-hidden">
+          <div className="px-5 py-4 border-b-2 border-[#1A1A1A] bg-[#F9F9F7] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <h3 className="font-black text-[#1A1A1A] text-xs uppercase tracking-widest flex items-center gap-1.5 font-display italic">
+              <Award size={14} className="text-black" />
+              Staff Profiles & Monthly Payroll Ledger ({currentYearMonth})
             </h3>
-            <span className="text-[10px] text-slate-400">Salary calculated pro-rata basis</span>
+            <span className="text-[9px] font-bold uppercase text-slate-400 tracking-wider">Salary computed on pro-rata basis</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-semibold">
+              <thead className="bg-[#F9F9F7] border-b border-black text-[#1A1A1A] font-bold uppercase tracking-wider">
                 <tr>
-                  <th className="px-5 py-2.5">Staff Details</th>
-                  <th className="px-3 py-2.5 text-center">Status</th>
-                  <th className="px-3 py-2.5 text-right">Monthly Base</th>
-                  <th className="px-3 py-2.5 text-center">Attendance ({currentYearMonth})</th>
-                  <th className="px-3 py-2.5 text-right">Payable Payout</th>
-                  <th className="px-5 py-2.5 text-right">Actions</th>
+                  <th className="px-5 py-3">Staff Details</th>
+                  <th className="px-3 py-3 text-center">Status</th>
+                  <th className="px-3 py-3 text-right">Monthly Base</th>
+                  <th className="px-3 py-3 text-center">Attendance ({currentYearMonth})</th>
+                  <th className="px-3 py-3 text-right">Payable Payout</th>
+                  <th className="px-5 py-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-[#1A1A1A]">
                 {filteredEmployees.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-8 text-center text-slate-400">
-                      No staff members logged. Click "Hire New Employee" to start.
+                    <td colSpan={6} className="px-5 py-10 text-center text-slate-400 font-medium">
+                      No staff members currently registered. Click "Hire New Employee" to start.
                     </td>
                   </tr>
                 ) : (
                   filteredEmployees.map(emp => {
                     const stats = getEmployeeStatsForMonth(emp, currentYearMonth);
                     return (
-                      <tr key={emp.id} className="hover:bg-slate-50/40 transition-colors">
-                        <td className="px-5 py-3">
-                          <div className="font-bold text-slate-800">{emp.name}</div>
-                          <div className="text-[10px] text-slate-400 mt-0.5">{emp.role} • {emp.phone}</div>
+                      <tr key={emp.id} className="hover:bg-[#F9F9F7]/50 transition-colors">
+                        <td className="px-5 py-4">
+                          <div className="font-bold text-[#1A1A1A]">{emp.name}</div>
+                          <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">{emp.role} • {emp.phone}</div>
                         </td>
-                        <td className="px-3 py-3 text-center">
+                        <td className="px-3 py-4 text-center">
                           <button
                             onClick={() => toggleEmployeeActive(emp.id)}
-                            className={`px-2 py-0.5 rounded-full font-bold text-[9px] cursor-pointer hover:opacity-80 transition-opacity ${
-                              emp.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
+                            className={`px-3 py-1 font-black text-[9px] uppercase border transition-all cursor-pointer ${
+                              emp.isActive 
+                                ? 'bg-emerald-50 border-emerald-600 text-emerald-800' 
+                                : 'bg-slate-50 border-slate-300 text-slate-500'
                             }`}
                           >
-                            {emp.isActive ? 'Active' : 'On Leave / Out'}
+                            {emp.isActive ? 'Active' : 'Out / Inactive'}
                           </button>
                         </td>
-                        <td className="px-3 py-3 text-right font-medium text-slate-700">
+                        <td className="px-3 py-4 text-right font-bold text-slate-600 font-mono">
                           ₹{emp.salary.toLocaleString('en-IN')}
                         </td>
-                        <td className="px-3 py-3 text-center">
-                          <div className="text-[10px] text-slate-600 font-medium">
+                        <td className="px-3 py-4 text-center">
+                          <div className="text-[10px] text-[#1A1A1A] font-bold font-mono">
                             {stats.presents}P • {stats.halfDays}H • {stats.leaves}L • {stats.absents}A
                           </div>
-                          <div className="text-[9px] text-slate-400 mt-0.5">Payable Days: {stats.payableDays}</div>
+                          <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Paid Days: {stats.payableDays}</div>
                         </td>
-                        <td className="px-3 py-3 text-right font-bold text-slate-900">
+                        <td className="px-3 py-4 text-right font-black text-[#1A1A1A] font-mono">
                           ₹{Math.round(stats.payableSalary).toLocaleString('en-IN')}
                         </td>
-                        <td className="px-5 py-3 text-right">
+                        <td className="px-5 py-4 text-right">
                           <button
                             onClick={() => toggleEmployeeActive(emp.id)}
-                            className="text-xs text-blue-600 hover:text-blue-800 font-medium cursor-pointer"
+                            className="text-xs text-black font-bold uppercase tracking-wider hover:underline cursor-pointer"
                           >
-                            {emp.isActive ? 'Deactivate' : 'Reactivate'}
+                            {emp.isActive ? 'Suspend' : 'Reinstate'}
                           </button>
                         </td>
                       </tr>
@@ -228,78 +227,78 @@ export default function EmployeeManager({ employees, onUpdateEmployees }: Employ
         </div>
       </div>
 
-      {/* COLUMN 3: Daily Attendance Register (Today) */}
+      {/* COLUMN 3: Daily Attendance Register */}
       <div className="lg:col-span-1 space-y-4">
-        <div className="bg-white rounded-xl shadow-2xs border border-slate-200 overflow-hidden flex flex-col min-h-[400px]">
+        <div className="bg-white border-2 border-[#1A1A1A] rounded-none overflow-hidden flex flex-col min-h-[450px]">
           
-          <div className="p-4 bg-slate-50 border-b border-slate-150 space-y-3">
-            <h3 className="font-semibold text-slate-800 text-xs flex items-center gap-1.5">
-              <UserCheck size={14} className="text-emerald-600" />
+          <div className="p-4 bg-[#F9F9F7] border-b-2 border-[#1A1A1A] space-y-3">
+            <h3 className="font-black text-[#1A1A1A] text-xs uppercase tracking-widest flex items-center gap-1.5 font-display italic">
+              <UserCheck size={14} className="text-black" />
               Daily Attendance Register
             </h3>
             
             {/* Date Picker */}
             <div className="relative">
-              <Calendar className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+              <Calendar className="absolute left-3 top-3 h-4 w-4 text-black pointer-events-none" />
               <input
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full bg-white border border-slate-200 text-xs rounded-lg pl-8 pr-3 py-2 font-semibold text-slate-700 focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                className="w-full bg-white border-2 border-black text-xs pl-10 pr-3 py-2.5 font-black uppercase tracking-wider text-[#1A1A1A] rounded-none focus:outline-none"
               />
             </div>
           </div>
 
-          {/* Quick stats */}
-          <div className="grid grid-cols-4 border-b border-slate-100 p-3 bg-slate-50/30 text-center gap-1">
-            <div className="bg-emerald-50 rounded-md p-1">
-              <div className="text-xs font-bold text-emerald-800">{presentCount}</div>
-              <div className="text-[8px] text-emerald-600 font-medium">Present</div>
+          {/* Quick stats - Editorial layout */}
+          <div className="grid grid-cols-4 border-b border-[#1A1A1A] p-2 bg-[#F9F9F7]/40 text-center gap-1">
+            <div className="border border-emerald-600 bg-emerald-50/50 p-1 rounded-none">
+              <div className="text-xs font-black font-mono text-emerald-800">{presentCount}</div>
+              <div className="text-[8px] font-bold text-emerald-600 uppercase tracking-wider">Present</div>
             </div>
-            <div className="bg-amber-50 rounded-md p-1">
-              <div className="text-xs font-bold text-amber-800">{halfDayCount}</div>
-              <div className="text-[8px] text-amber-600 font-medium">Half-Day</div>
+            <div className="border border-amber-500 bg-amber-50/50 p-1 rounded-none">
+              <div className="text-xs font-black font-mono text-amber-800">{halfDayCount}</div>
+              <div className="text-[8px] font-bold text-amber-600 uppercase tracking-wider">Half</div>
             </div>
-            <div className="bg-blue-50 rounded-md p-1">
-              <div className="text-xs font-bold text-blue-800">{leaveCount}</div>
-              <div className="text-[8px] text-blue-600 font-medium">Leave</div>
+            <div className="border border-blue-600 bg-blue-50/50 p-1 rounded-none">
+              <div className="text-xs font-black font-mono text-blue-800">{leaveCount}</div>
+              <div className="text-[8px] font-bold text-blue-600 uppercase tracking-wider">Leave</div>
             </div>
-            <div className="bg-red-50 rounded-md p-1">
-              <div className="text-xs font-bold text-red-800">{absentCount}</div>
-              <div className="text-[8px] text-red-600 font-medium">Absent</div>
+            <div className="border border-red-600 bg-red-50/50 p-1 rounded-none">
+              <div className="text-xs font-black font-mono text-red-800">{absentCount}</div>
+              <div className="text-[8px] font-bold text-red-600 uppercase tracking-wider">Absent</div>
             </div>
           </div>
 
           {/* Staff Attendance Action List */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {employees.filter(e => e.isActive).length === 0 ? (
-              <p className="text-center text-[11px] text-slate-400 py-6">No active employees to mark attendance.</p>
+              <p className="text-center text-[10px] uppercase font-bold text-slate-400 py-10">No active employees to mark attendance.</p>
             ) : (
               employees.filter(e => e.isActive).map(emp => {
                 const status = emp.attendance[selectedDate];
                 return (
-                  <div key={emp.id} className="p-3 border border-slate-100 rounded-lg flex flex-col gap-2 bg-slate-50/20">
+                  <div key={emp.id} className="p-3.5 border border-[#1A1A1A] rounded-none flex flex-col gap-2 bg-white">
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-slate-800 text-xs">{emp.name}</span>
-                      <span className="text-[9px] text-slate-400 font-medium">{emp.role}</span>
+                      <span className="font-bold text-[#1A1A1A] text-xs">{emp.name}</span>
+                      <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">{emp.role}</span>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-1.5">
+                    <div className="grid grid-cols-4 gap-1">
                       {(['Present', 'Half-Day', 'Leave', 'Absent'] as const).map(option => {
                         const isSel = status === option;
-                        let btnColor = 'bg-white hover:bg-slate-50 text-slate-500 border-slate-200';
+                        let btnColor = 'bg-white hover:bg-slate-50 text-[#1A1A1A] border-slate-300';
                         if (isSel) {
-                          if (option === 'Present') btnColor = 'bg-emerald-600 text-white border-emerald-600 font-bold';
-                          else if (option === 'Half-Day') btnColor = 'bg-amber-500 text-white border-amber-500 font-bold';
-                          else if (option === 'Leave') btnColor = 'bg-blue-500 text-white border-blue-500 font-bold';
-                          else if (option === 'Absent') btnColor = 'bg-red-500 text-white border-red-500 font-bold';
+                          if (option === 'Present') btnColor = 'bg-black text-white border-black font-black';
+                          else if (option === 'Half-Day') btnColor = 'bg-amber-500 text-white border-amber-500 font-black';
+                          else if (option === 'Leave') btnColor = 'bg-blue-600 text-white border-blue-600 font-black';
+                          else if (option === 'Absent') btnColor = 'bg-red-600 text-white border-red-600 font-black';
                         }
                         return (
                           <button
                             key={option}
                             type="button"
                             onClick={() => handleMarkAttendance(emp.id, option)}
-                            className={`py-1 text-[9px] rounded-md border transition-all truncate cursor-pointer ${btnColor}`}
+                            className={`py-1.5 text-[8px] font-black uppercase border rounded-none transition-all truncate cursor-pointer text-center ${btnColor}`}
                           >
                             {option === 'Half-Day' ? 'Half' : option}
                           </button>
@@ -317,44 +316,44 @@ export default function EmployeeManager({ employees, onUpdateEmployees }: Employ
 
       {/* Hire Modal */}
       {isEmployeeFormOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-40">
-          <div className="bg-white rounded-xl shadow-2xl border border-slate-200 max-w-sm w-full overflow-hidden">
-            <div className="px-6 py-4 bg-slate-50 border-b border-slate-150 flex justify-between items-center">
-              <h3 className="font-semibold text-slate-800 text-sm">Hire New Staff Member</h3>
-              <button onClick={() => setIsEmployeeFormOpen(false)} className="text-slate-400 hover:text-slate-600 text-sm font-medium">✕</button>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-40">
+          <div className="bg-white border-2 border-[#1A1A1A] rounded-none max-w-sm w-full overflow-hidden shadow-none">
+            <div className="px-6 py-5 bg-[#F9F9F7] border-b-2 border-[#1A1A1A] flex justify-between items-center">
+              <h3 className="font-black uppercase tracking-widest text-xs text-[#1A1A1A] font-display italic">Hire New Staff Member</h3>
+              <button onClick={() => setIsEmployeeFormOpen(false)} className="text-black hover:opacity-75 font-black cursor-pointer">✕</button>
             </div>
             <form onSubmit={handleAddEmployee} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Employee Full Name *</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Employee Full Name *</label>
                 <input
                   type="text"
                   required
                   value={empName}
                   onChange={(e) => setEmpName(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-white border border-[#1A1A1A] p-3 text-xs focus:ring-1 focus:ring-black focus:outline-none"
                   placeholder="e.g. Karan Patel"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Designation / Role</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Designation / Role</label>
                   <input
                     type="text"
                     value={empRole}
                     onChange={(e) => setEmpRole(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-white border border-[#1A1A1A] p-3 text-xs focus:ring-1 focus:ring-black focus:outline-none"
                     placeholder="e.g. Accounts Exec"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Contact Phone *</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Contact Phone *</label>
                   <input
                     type="text"
                     required
                     value={empPhone}
                     onChange={(e) => setEmpPhone(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-white border border-[#1A1A1A] p-3 text-xs focus:ring-1 focus:ring-black focus:outline-none"
                     placeholder="e.g. +91 95432 00000"
                   />
                 </div>
@@ -362,40 +361,40 @@ export default function EmployeeManager({ employees, onUpdateEmployees }: Employ
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Monthly Salary (₹) *</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Monthly Salary (₹) *</label>
                   <input
                     type="number"
                     min={0}
                     required
                     value={empSalary || ''}
                     onChange={(e) => setEmpSalary(Math.max(0, parseInt(e.target.value) || 0))}
-                    className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
-                    placeholder="₹ 15000"
+                    className="w-full bg-white border border-[#1A1A1A] p-3 text-xs focus:ring-1 focus:ring-black focus:outline-none font-bold font-mono"
+                    placeholder="15000"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Joining Date</label>
+                  <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Joining Date</label>
                   <input
                     type="date"
                     required
                     value={empJoinDate}
                     onChange={(e) => setEmpJoinDate(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-white border border-[#1A1A1A] p-2.5 text-xs focus:ring-1 focus:ring-black focus:outline-none"
                   />
                 </div>
               </div>
 
-              <div className="px-6 py-4 -mx-6 -mb-6 bg-slate-50 border-t border-slate-150 flex justify-end gap-2">
+              <div className="pt-4 border-t border-slate-200 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsEmployeeFormOpen(false)}
-                  className="px-4 py-2 border border-slate-200 text-xs font-semibold rounded-lg hover:bg-slate-100 transition-colors"
+                  className="px-5 py-3 border-2 border-slate-300 text-slate-700 text-xs font-bold uppercase tracking-widest hover:bg-slate-100 transition-colors rounded-none cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors"
+                  className="px-5 py-3 bg-[#1A1A1A] hover:bg-white hover:text-black border-2 border-[#1A1A1A] text-white text-xs font-black uppercase tracking-widest transition-colors rounded-none cursor-pointer"
                 >
                   Confirm Hiring
                 </button>

@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { BusinessDetails, AppData } from '../types';
-import { Save, Building, ShieldCheck, Download, Upload, Info, Laptop, Monitor, AlertTriangle } from 'lucide-react';
+import { Save, Building, ShieldCheck, Download, Upload, Info, Laptop, Monitor, AlertTriangle, Trash2, Cpu, Check } from 'lucide-react';
 
 interface BusinessProfileProps {
   businessDetails: BusinessDetails;
@@ -24,6 +24,17 @@ export default function BusinessProfile({
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const [importSuccess, setImportSuccess] = useState(false);
+  
+  // Memory Optimization & Hard Reset States
+  const [resetConfirm, setResetConfirm] = useState(false);
+  const [pruningStatus, setPruningStatus] = useState<string | null>(null);
+
+  // Calculate local storage size
+  const rawDataString = JSON.stringify(appData);
+  const dataSizeInBytes = rawDataString.length;
+  const dataSizeInKB = (dataSizeInBytes / 1024).toFixed(2);
+  const storageCapacityKB = 5120; // 5MB standard LocalStorage quota
+  const storagePercentage = Math.min(100, parseFloat(((parseFloat(dataSizeInKB) / storageCapacityKB) * 100).toFixed(3)));
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -46,7 +57,7 @@ export default function BusinessProfile({
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${details.name.replace(/\s+/g, '_')}_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+    link.download = `${(details.name || 'Enterprise').replace(/\s+/g, '_')}_Backup_${new Date().toISOString().slice(0, 10)}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -75,6 +86,7 @@ export default function BusinessProfile({
           parsed.businessDetails
         ) {
           onImportBackup(parsed);
+          setDetails({ ...parsed.businessDetails });
           setImportSuccess(true);
           setTimeout(() => setImportSuccess(false), 4000);
         } else {
@@ -88,50 +100,112 @@ export default function BusinessProfile({
     if (e.target) e.target.value = '';
   };
 
-  return (
-    <div className="space-y-6" id="business-profile-container">
+  // Perform a full hard reset to start empty and erase all demo entries
+  const handleFullHardReset = () => {
+    const emptyData: AppData = {
+      inventory: [],
+      dealers: [],
+      dealerPayments: [],
+      employees: [],
+      invoices: [],
+      businessDetails: {
+        name: "",
+        tagline: "",
+        ownerName: "",
+        address: "",
+        phone: "",
+        email: "",
+        gstin: "",
+        bankName: "",
+        bankAccountNo: "",
+        bankIfsc: "",
+        termsAndConditions: "1. Goods once sold will not be taken back.\n2. Warranty as per manufacturer terms.",
+        stateCode: ""
+      }
+    };
+
+    localStorage.removeItem("VERTEX_BIZ_APP_DATA");
+    onImportBackup(emptyData);
+    setDetails({ ...emptyData.businessDetails });
+    setResetConfirm(false);
+    setImportSuccess(true);
+    setTimeout(() => setImportSuccess(false), 4000);
+  };
+
+  // Memory saving: compact ledger & prune empty items
+  const handleOptimizeMemory = () => {
+    setPruningStatus("Analyzing database...");
+    setTimeout(() => {
+      // 1. Filter out empty items in stock that don't have a valid name or id
+      const filteredInventory = appData.inventory.filter(item => item.name.trim() !== "" && item.id);
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      // 2. Filter out dealerPayments that don't have matching dealer (unless it's an unassigned log)
+      const validDealerIds = new Set(appData.dealers.map(d => d.id));
+      const filteredPayments = appData.dealerPayments.filter(pay => !pay.dealerId || validDealerIds.has(pay.dealerId));
+
+      // 3. Compact dates or remove orphaned invoices
+      const filteredInvoices = appData.invoices.filter(inv => inv.items && inv.items.length > 0 && inv.invoiceNo);
+
+      // 4. Compact the dataset and trigger update
+      const optimizedData: AppData = {
+        ...appData,
+        inventory: filteredInventory,
+        dealerPayments: filteredPayments,
+        invoices: filteredInvoices
+      };
+
+      onImportBackup(optimizedData);
+      setPruningStatus("Memory storage optimized successfully!");
+      setTimeout(() => setPruningStatus(null), 3500);
+    }, 1000);
+  };
+
+  return (
+    <div className="space-y-8" id="business-profile-container">
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Profile Settings Form */}
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
-          <div className="p-5 border-b border-slate-150 bg-slate-50 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
-              <Building size={16} className="text-blue-600" />
-              Company / Business Details
+        {/* Profile Settings Form - Editorial Style */}
+        <div className="lg:col-span-2 bg-white border-2 border-[#1A1A1A] rounded-none overflow-hidden shadow-none">
+          <div className="p-6 border-b-2 border-[#1A1A1A] bg-[#F9F9F7] flex items-center justify-between">
+            <h2 className="text-lg font-black italic font-display text-[#1A1A1A] flex items-center gap-2 uppercase tracking-tight">
+              <Building size={18} className="text-[#1A1A1A]" />
+              Business Registry & Profile Settings
             </h2>
-            <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-medium">GST Billing Ready</span>
+            <span className="text-[9px] border border-black bg-[#1A1A1A] text-white px-3 py-1 font-bold uppercase tracking-wider">
+              GST BILLING ENG
+            </span>
           </div>
 
-          <form onSubmit={handleSave} className="p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form onSubmit={handleSave} className="p-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Business Registered Name *</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Business Registered Name *</label>
                 <input
                   type="text"
                   name="name"
                   value={details.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
-                  placeholder="e.g. Vertex Enterprises"
+                  className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-medium focus:ring-1 focus:ring-black focus:outline-none"
+                  placeholder="e.g. Metro Wholesale & Supply"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Tagline / Slogan</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Tagline / Slogan</label>
                 <input
                   type="text"
                   name="tagline"
                   value={details.tagline}
                   onChange={handleInputChange}
-                  className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
-                  placeholder="e.g. Quality Industrial Spares"
+                  className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-medium focus:ring-1 focus:ring-black focus:outline-none"
+                  placeholder="e.g. Premium Wholesale Spares"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">GSTIN (15-digit GST Number) *</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">GSTIN (15-digit GST Number) *</label>
                 <input
                   type="text"
                   name="gstin"
@@ -139,137 +213,136 @@ export default function BusinessProfile({
                   onChange={handleInputChange}
                   required
                   maxLength={15}
-                  className="w-full bg-slate-50 border border-slate-200 text-xs font-mono rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
-                  placeholder="e.g. 29AAAAA0000A1Z1"
+                  className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-mono font-bold focus:ring-1 focus:ring-black focus:outline-none"
+                  placeholder="e.g. 27AADCM1234F1Z5"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">GST State & State Code *</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">GST State & State Code *</label>
                 <input
                   type="text"
                   name="stateCode"
                   value={details.stateCode}
                   onChange={handleInputChange}
                   required
-                  className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
-                  placeholder="e.g. 29 (Karnataka)"
+                  className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-medium focus:ring-1 focus:ring-black focus:outline-none"
+                  placeholder="e.g. 27 (Maharashtra)"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Contact Phone Number *</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Contact Phone Number *</label>
                 <input
                   type="text"
                   name="phone"
                   value={details.phone}
                   onChange={handleInputChange}
                   required
-                  className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
-                  placeholder="e.g. +91 98765 43210"
+                  className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-medium focus:ring-1 focus:ring-black focus:outline-none"
+                  placeholder="e.g. +91 91122 33445"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Contact Email Address</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Contact Email Address</label>
                 <input
                   type="email"
                   name="email"
                   value={details.email}
                   onChange={handleInputChange}
-                  className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
-                  placeholder="e.g. office@vertex.com"
+                  className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-medium focus:ring-1 focus:ring-black focus:outline-none"
+                  placeholder="e.g. billing@metro.com"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Proprietor / Owner Name</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Proprietor / Owner Name</label>
                 <input
                   type="text"
                   name="ownerName"
                   value={details.ownerName}
                   onChange={handleInputChange}
-                  className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
-                  placeholder="Owner / Partner Name"
+                  className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-medium focus:ring-1 focus:ring-black focus:outline-none"
+                  placeholder="Proprietor Full Name"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Bank Name (For Bill Footer)</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Bank Name (For Bill Footer)</label>
                 <input
                   type="text"
                   name="bankName"
                   value={details.bankName || ''}
                   onChange={handleInputChange}
-                  className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-medium focus:ring-1 focus:ring-black focus:outline-none"
                   placeholder="Bank Name"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Bank Account Number</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Bank Account Number</label>
                 <input
                   type="text"
                   name="bankAccountNo"
                   value={details.bankAccountNo || ''}
                   onChange={handleInputChange}
-                  className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-medium focus:ring-1 focus:ring-black focus:outline-none"
                   placeholder="Account Number"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Bank IFSC Code</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Bank IFSC Code</label>
                 <input
                   type="text"
                   name="bankIfsc"
                   value={details.bankIfsc || ''}
                   onChange={handleInputChange}
-                  className="w-full bg-slate-50 border border-slate-200 text-xs font-mono rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-mono focus:ring-1 focus:ring-black focus:outline-none"
                   placeholder="IFSC Code"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">Billing & Delivery Address *</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Billing & Delivery Address *</label>
               <textarea
                 name="address"
                 value={details.address}
                 onChange={handleInputChange}
                 required
                 rows={2}
-                className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500 resize-none"
+                className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-medium focus:ring-1 focus:ring-black focus:outline-none resize-none"
                 placeholder="Business full postal address for invoices..."
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">Invoice Terms & Conditions</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-[#1A1A1A] mb-1.5">Invoice Terms & Conditions</label>
               <textarea
                 name="termsAndConditions"
                 value={details.termsAndConditions}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg p-2.5 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500 resize-none"
+                className="w-full bg-white border border-[#1A1A1A] rounded-none p-3 text-xs font-medium focus:ring-1 focus:ring-black focus:outline-none resize-none"
                 placeholder="Terms displayed on invoice bottom..."
               />
             </div>
 
-            <div className="flex items-center justify-between pt-2">
-              <p className="text-[10px] text-slate-400 flex items-center gap-1">
-                <ShieldCheck size={12} className="text-emerald-500" />
-                These details will appear on all generated invoices.
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between pt-4 border-t border-slate-200 gap-4">
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest flex items-center gap-1.5">
+                <ShieldCheck size={14} className="text-black" />
+                These details are populated onto the official invoices.
               </p>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-end gap-3">
                 {saveSuccess && (
-                  <span className="text-xs text-emerald-600 font-medium">Details saved successfully!</span>
+                  <span className="text-xs text-[#1A1A1A] font-bold uppercase tracking-wider">Saved Successfully!</span>
                 )}
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-xs transition-colors flex items-center gap-1.5"
+                  className="px-6 py-3 bg-[#1A1A1A] hover:bg-white hover:text-[#1A1A1A] border-2 border-[#1A1A1A] text-white font-bold text-xs uppercase tracking-widest transition-colors cursor-pointer rounded-none"
                 >
-                  <Save size={14} />
                   Save Business Profile
                 </button>
               </div>
@@ -278,58 +351,90 @@ export default function BusinessProfile({
         </div>
 
         {/* Backup and Local Storage Control Column */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           
-          {/* Chrome Install Shortcut Guide */}
-          <div className="bg-slate-900 text-white rounded-xl shadow-xs border border-slate-800 p-5 space-y-4">
-            <h3 className="text-xs font-semibold flex items-center gap-2 text-blue-400">
-              <Monitor size={16} />
-              Open as Chrome Desktop Shortcut
+          {/* Active Memory Saving & Storage Optimizer Panel */}
+          <div className="bg-white border-2 border-[#1A1A1A] rounded-none p-6 space-y-6 shadow-none">
+            <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 text-[#1A1A1A] border-b border-[#1A1A1A] pb-3 font-display italic">
+              <Cpu size={18} />
+              Memory & Storage Saving Center
             </h3>
-            <p className="text-[11px] text-slate-300 leading-relaxed">
-              This app can be added as a standalone window shortcut on your Laptop or PC's Desktop/Home Screen. 
-            </p>
             
-            <div className="space-y-2 border-t border-slate-800 pt-3">
-              <div className="flex gap-2.5">
-                <span className="w-5 h-5 bg-slate-800 text-slate-300 text-[10px] font-bold rounded-full flex items-center justify-center shrink-0">1</span>
-                <p className="text-[10px] text-slate-300">Click the <strong className="text-white">Three Dots menu (⋮)</strong> at the top right of your Google Chrome browser window.</p>
+            {/* Real-time Storage stats */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-end text-xs font-bold uppercase tracking-wider">
+                <span>Active Database Footprint</span>
+                <span className="font-mono">{dataSizeInKB} KB</span>
               </div>
-              <div className="flex gap-2.5">
-                <span className="w-5 h-5 bg-slate-800 text-slate-300 text-[10px] font-bold rounded-full flex items-center justify-center shrink-0">2</span>
-                <p className="text-[10px] text-slate-300">Select <strong className="text-white">Save and share</strong>, then click <strong className="text-white">Install page...</strong> or <strong className="text-white">Create shortcut...</strong>.</p>
+              
+              {/* Storage bar */}
+              <div className="w-full h-4 border border-black bg-slate-100 p-0.5 rounded-none">
+                <div 
+                  style={{ width: `${Math.max(1, storagePercentage)}%` }}
+                  className="h-full bg-black transition-all duration-500"
+                />
               </div>
-              <div className="flex gap-2.5">
-                <span className="w-5 h-5 bg-slate-800 text-slate-300 text-[10px] font-bold rounded-full flex items-center justify-center shrink-0">3</span>
-                <p className="text-[10px] text-slate-300">Tick <strong className="text-white">Open as window</strong> and click Create. An icon shortcut is generated instantly on your desktop!</p>
+
+              <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                <span>0 KB</span>
+                <span>Chrome Quota: 5.0 MB</span>
               </div>
             </div>
 
-            <div className="p-2.5 bg-slate-800/50 rounded-lg flex items-start gap-2 border border-slate-800">
-              <Laptop size={14} className="text-emerald-400 shrink-0 mt-0.5" />
-              <p className="text-[9px] text-slate-400">
-                You can pin the shortcut to your Windows Taskbar or Mac Dock for quick, one-click access just like standard billing software!
+            {/* Metrics Checklist */}
+            <div className="grid grid-cols-2 gap-3 p-3 bg-[#F9F9F7] border border-[#1A1A1A]">
+              <div>
+                <p className="text-[10px] uppercase font-bold text-slate-400">Total Stock Items</p>
+                <p className="text-lg font-black italic mt-0.5">{appData.inventory.length}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase font-bold text-slate-400">Invoices Logs</p>
+                <p className="text-lg font-black italic mt-0.5">{appData.invoices.length}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase font-bold text-slate-400">Staff Records</p>
+                <p className="text-lg font-black italic mt-0.5">{appData.employees.length}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase font-bold text-slate-400">Registered Dealers</p>
+                <p className="text-lg font-black italic mt-0.5">{appData.dealers.length}</p>
+              </div>
+            </div>
+
+            {/* Prune and compact ledger */}
+            <div className="space-y-3">
+              <p className="text-[11px] text-slate-500 leading-normal">
+                Optimize and free application memory by cleaning out orphaned receipts, empty ledger items, and formatting Whitespace parameters.
               </p>
+              
+              <button
+                onClick={handleOptimizeMemory}
+                disabled={!!pruningStatus}
+                className="w-full py-3 border-2 border-black hover:bg-[#1A1A1A] hover:text-white bg-transparent text-[#1A1A1A] text-xs font-bold uppercase tracking-widest transition-all cursor-pointer rounded-none flex items-center justify-center gap-2"
+              >
+                <Cpu size={14} />
+                {pruningStatus ? pruningStatus : "Compact & Prune Memory"}
+              </button>
             </div>
           </div>
 
-          {/* Local App Storage Management */}
-          <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-5 space-y-4">
-            <h3 className="text-xs font-semibold text-slate-800 flex items-center gap-2">
-              <ShieldCheck size={16} className="text-emerald-600" />
-              Database Backup & Recovery
+          {/* Database Backup & Recovery */}
+          <div className="bg-white border-2 border-[#1A1A1A] rounded-none p-6 space-y-4 shadow-none">
+            <h3 className="text-xs font-black uppercase tracking-widest text-[#1A1A1A] flex items-center gap-2 font-display italic">
+              <ShieldCheck size={16} />
+              Database Backups
             </h3>
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              Your billing catalog, transactions, supplier balances, and staff logs are securely stored in Chrome's <strong className="text-slate-700">Local Storage</strong>. Download a backup copy regularly.
+              Your billing logs and catalog data are saved locally inside Chrome's secure isolation engine. Export backup copies regularly.
             </p>
 
-            <div className="space-y-2 pt-1">
+            <div className="space-y-3 pt-1">
               <button
                 onClick={handleBackupExport}
-                className="w-full py-2.5 px-3 border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 bg-transparent hover:bg-slate-100 border border-[#1A1A1A] text-[#1A1A1A] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 rounded-none cursor-pointer"
               >
-                <Download size={14} className="text-blue-600" />
-                Download Complete Backup (.json)
+                <Download size={14} />
+                Export JSON Database
               </button>
 
               <div className="relative">
@@ -342,33 +447,65 @@ export default function BusinessProfile({
                 />
                 <label
                   htmlFor="backup-upload"
-                  className="w-full py-2.5 px-3 border border-dashed border-slate-200 hover:border-blue-500 hover:bg-blue-50/20 text-slate-600 hover:text-blue-700 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3 border border-dashed border-[#1A1A1A] hover:bg-slate-50 text-[#1A1A1A] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 cursor-pointer rounded-none"
                 >
-                  <Upload size={14} className="text-emerald-600" />
-                  Restore / Upload Backup (.json)
+                  <Upload size={14} />
+                  Restore JSON Database
                 </label>
               </div>
             </div>
 
             {importSuccess && (
-              <div className="p-2 bg-emerald-50 text-emerald-800 text-[10px] rounded-md border border-emerald-100">
-                Data restored successfully! Please refresh or toggle tabs to view changes.
+              <div className="p-3 bg-emerald-50 border border-emerald-300 text-emerald-800 text-[10px] font-bold uppercase tracking-widest rounded-none text-center">
+                Database restored successfully!
               </div>
             )}
 
             {importError && (
-              <div className="p-2 bg-red-50 text-red-800 text-[10px] rounded-md border border-red-100 flex items-start gap-1">
+              <div className="p-3 bg-red-50 border border-red-300 text-red-800 text-[10px] font-bold uppercase tracking-wide rounded-none flex items-start gap-1">
                 <AlertTriangle size={12} className="shrink-0 mt-0.5" />
                 <span>{importError}</span>
               </div>
             )}
+          </div>
 
-            <div className="p-3 bg-amber-50 border border-amber-100 rounded-lg flex items-start gap-2">
-              <Info size={14} className="text-amber-600 shrink-0 mt-0.5" />
-              <p className="text-[10px] text-amber-700 leading-normal">
-                <strong>Warning:</strong> Restoring a backup file will overwrite all current entries. We recommend exporting a backup first.
-              </p>
-            </div>
+          {/* Destructive Clear Cache & Erase Demo Entries Panel */}
+          <div className="bg-white border-2 border-red-600 rounded-none p-6 space-y-4 shadow-none">
+            <h3 className="text-xs font-black uppercase tracking-widest text-red-600 flex items-center gap-2 font-display italic">
+              <Trash2 size={16} />
+              Reset & Wipe Database
+            </h3>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Delete all data cached in your browser. This will **permanently erase** any residual demo entries, invoices, and restore the ledger to a completely empty production-ready state.
+            </p>
+
+            {!resetConfirm ? (
+              <button
+                onClick={() => setResetConfirm(true)}
+                className="w-full py-3 border-2 border-red-600 hover:bg-red-600 hover:text-white bg-transparent text-red-600 text-xs font-bold uppercase tracking-widest transition-all cursor-pointer rounded-none flex items-center justify-center gap-2"
+              >
+                <Trash2 size={14} />
+                Hard Reset (Wipe All)
+              </button>
+            ) : (
+              <div className="space-y-3 p-3 bg-red-50 border border-red-200">
+                <p className="text-[10px] text-red-800 font-bold uppercase tracking-wide text-center">Are you absolutely sure? This cannot be undone!</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={handleFullHardReset}
+                    className="py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-black uppercase tracking-wider rounded-none cursor-pointer"
+                  >
+                    Yes, Wipe
+                  </button>
+                  <button
+                    onClick={() => setResetConfirm(false)}
+                    className="py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold uppercase tracking-wider rounded-none cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
         </div>

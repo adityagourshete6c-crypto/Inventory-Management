@@ -72,126 +72,118 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans" id="app-root-container">
+    <div className="min-h-screen bg-[#FDFDFB] text-[#1A1A1A] flex flex-col font-sans" id="app-root-container">
       
-      {/* PROFESSIONAL CHROME WEB APP HEADER */}
-      <header className="bg-slate-900 text-white border-b border-slate-800 shrink-0 no-print">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-black text-white text-base tracking-wider shadow-sm">
-                V
-              </div>
-              <div>
-                <h1 className="text-sm font-black tracking-tight flex items-center gap-1.5 uppercase">
-                  {data.businessDetails.name || 'Enterprise'}
-                </h1>
-                <p className="text-[10px] text-slate-400 font-medium">GSTIN: {data.businessDetails.gstin || 'Add registered GSTIN'}</p>
-              </div>
+      {/* PROFESSIONAL CHROME WEB APP HEADER - EDITORIAL AESTHETIC */}
+      <header className="h-auto md:h-20 border-b-2 border-[#1A1A1A] flex flex-col md:flex-row items-stretch md:items-center justify-between px-6 py-4 md:py-0 bg-white shrink-0 no-print">
+        <div className="flex flex-col justify-center">
+          <h1 className="text-2xl md:text-3xl font-black tracking-tighter leading-none font-display uppercase">
+            {data.businessDetails.name || 'METRO WHOLESALE & SUPPLY'}
+          </h1>
+          <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-500 mt-1">
+            GSTIN: {data.businessDetails.gstin || 'NOT REGISTERED'} • Business Management Portal
+          </span>
+        </div>
+        
+        <div className="flex items-center gap-6 mt-4 md:mt-0 justify-between md:justify-end">
+          <div className="text-left md:text-right">
+            <div className="text-[9px] uppercase tracking-wider font-bold text-slate-400">Session Status</div>
+            <div className="text-xs md:text-sm font-medium font-display uppercase tracking-tight">
+              {data.businessDetails.ownerName || 'Administrator'} • Secure Offline
             </div>
           </div>
-
+          
           <div className="flex items-center gap-3">
-            {/* Quick reminder on shortcut install */}
-            <div className="hidden md:flex items-center gap-1.5 bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg text-[10px] text-slate-300">
-              <Laptop size={12} className="text-blue-400" />
-              <span>For Shortcut: Click Chrome Menu (⋮) → Save and share → Install page...</span>
-            </div>
-
-            <div className="text-right text-xs">
-              <p className="text-slate-300 font-bold">{new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</p>
-              <p className="text-[9px] text-emerald-400 font-semibold uppercase flex items-center justify-end gap-1">
-                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
-                Secure Offline Mode
-              </p>
+            <div className="h-10 w-10 rounded-full border-2 border-[#1A1A1A] flex items-center justify-center font-black text-xs hover:bg-[#1A1A1A] hover:text-white transition-colors cursor-help" title="Local Database storage running directly inside your Google Chrome application memory.">
+              {(data.businessDetails.name || 'ME').slice(0, 2).toUpperCase()}
             </div>
           </div>
         </div>
       </header>
 
-      {/* TABS SELECTOR / RUNTIME CONTROLS */}
-      <nav className="bg-white border-b border-slate-200 shadow-3xs sticky top-0 z-30 no-print">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-1 sm:space-x-4 overflow-x-auto py-2">
+      {/* TABS SELECTOR / RUNTIME CONTROLS - EDITORIAL AESTHETIC */}
+      <nav className="bg-[#F9F9F7] border-b border-[#1A1A1A] sticky top-0 z-30 no-print">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex space-x-0 overflow-x-auto py-0">
             
             <button
               onClick={() => setActiveTab('billing')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+              className={`flex items-center gap-1.5 px-5 py-3.5 text-xs font-bold uppercase tracking-wider border-r border-[#1A1A1A] transition-all whitespace-nowrap cursor-pointer ${
                 activeTab === 'billing'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-[#1A1A1A] text-white'
+                  : 'text-[#1A1A1A] hover:bg-slate-200'
               }`}
             >
-              <Receipt size={14} />
+              <Receipt size={13} />
               GST Billing
             </button>
 
             <button
               onClick={() => setActiveTab('inventory')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+              className={`flex items-center gap-1.5 px-5 py-3.5 text-xs font-bold uppercase tracking-wider border-r border-[#1A1A1A] transition-all whitespace-nowrap cursor-pointer ${
                 activeTab === 'inventory'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-[#1A1A1A] text-white'
+                  : 'text-[#1A1A1A] hover:bg-slate-200'
               }`}
             >
-              <Boxes size={14} />
+              <Boxes size={13} />
               Stock Catalog
             </button>
 
             <button
               onClick={() => setActiveTab('dealers')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+              className={`flex items-center gap-1.5 px-5 py-3.5 text-xs font-bold uppercase tracking-wider border-r border-[#1A1A1A] transition-all whitespace-nowrap cursor-pointer ${
                 activeTab === 'dealers'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-[#1A1A1A] text-white'
+                  : 'text-[#1A1A1A] hover:bg-slate-200'
               }`}
             >
-              <Landmark size={14} />
+              <Landmark size={13} />
               Dealers Ledger
             </button>
 
             <button
               onClick={() => setActiveTab('employees')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+              className={`flex items-center gap-1.5 px-5 py-3.5 text-xs font-bold uppercase tracking-wider border-r border-[#1A1A1A] transition-all whitespace-nowrap cursor-pointer ${
                 activeTab === 'employees'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-[#1A1A1A] text-white'
+                  : 'text-[#1A1A1A] hover:bg-slate-200'
               }`}
             >
-              <Users size={14} />
+              <Users size={13} />
               Staff Registry
             </button>
 
             <button
               onClick={() => setActiveTab('reports')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+              className={`flex items-center gap-1.5 px-5 py-3.5 text-xs font-bold uppercase tracking-wider border-r border-[#1A1A1A] transition-all whitespace-nowrap cursor-pointer ${
                 activeTab === 'reports'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-[#1A1A1A] text-white'
+                  : 'text-[#1A1A1A] hover:bg-slate-200'
               }`}
             >
-              <BarChart3 size={14} />
+              <BarChart3 size={13} />
               Performance Reports
             </button>
 
             <button
               onClick={() => setActiveTab('profile')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+              className={`flex items-center gap-1.5 px-5 py-3.5 text-xs font-bold uppercase tracking-wider border-r border-[#1A1A1A] transition-all whitespace-nowrap cursor-pointer ${
                 activeTab === 'profile'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-[#1A1A1A] text-white'
+                  : 'text-[#1A1A1A] hover:bg-slate-200'
               }`}
             >
-              <Settings size={14} />
-              Business Profile
+              <Settings size={13} />
+              Business Profile & Reset
             </button>
 
           </div>
         </div>
       </nav>
 
-      {/* CORE WORKSPACE CANVAS */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 no-print">
+      {/* CORE WORKSPACE CANVAS - EDITORIAL AESTHETIC */}
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 no-print">
         {activeTab === 'billing' && (
           <BillingManager
             inventory={data.inventory}
@@ -242,14 +234,17 @@ export default function App() {
         )}
       </main>
 
-      {/* SYSTEM WATERMARK & AUDIT FOOTER */}
-      <footer className="bg-slate-100 border-t border-slate-200 py-3 shrink-0 no-print">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center text-[10px] text-slate-400 font-medium">
-          <p>© {new Date().getFullYear()} Vertex Systems Inc. All Data Saved Locally.</p>
-          <p className="flex items-center gap-1">
-            <AlertCircle size={10} />
-            Chrome PWA Secure Storage Ready
-          </p>
+      {/* SYSTEM WATERMARK & AUDIT FOOTER - EDITORIAL AESTHETIC */}
+      <footer className="bg-white border-t-2 border-[#1A1A1A] py-4 px-6 md:px-12 shrink-0 no-print">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-[10px] text-slate-500 font-bold tracking-widest uppercase gap-2">
+          <p>© {new Date().getFullYear()} VERTEX BILLING & ENTERPRISE LEDGER</p>
+          <div className="flex gap-6">
+            <span className="flex items-center gap-1 text-[#1A1A1A]">
+              <AlertCircle size={10} />
+              LOCAL CHROME WORKSPACE ONLY
+            </span>
+            <span>APP v4.2.0 • OPTIMIZED OFF-LINE STORAGE</span>
+          </div>
         </div>
       </footer>
 
