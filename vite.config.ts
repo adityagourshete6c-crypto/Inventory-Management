@@ -4,7 +4,8 @@ import path from 'path';
 import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
-  return {base:'/Inventory-Managememt/'
+  return {       
+    base:'/Inventory-Management/'
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
